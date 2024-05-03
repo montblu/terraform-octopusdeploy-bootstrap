@@ -3,11 +3,6 @@ variable "octopus_group_name" {
   type        = string
   default     = null
 }
-variable "octopus_dockerhub_feed_name" {
-  description = "Octopus DockerHub feed name"
-  type        = string
-  default     = null
-}
 
 variable "octopus_environments" {
   description = "octopus_environments"
