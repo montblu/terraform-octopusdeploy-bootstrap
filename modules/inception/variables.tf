@@ -27,7 +27,7 @@ variable "lifecycles" {
     )
     phases = optional(list(object({
       name                                  = string
-      is_optional_phase                     = optional(bool, null)
+      is_optional_phase                     = optional(bool, false)
       minimum_environments_before_promotion = optional(number, 1)
       optional_deployment_targets           = optional(list(string), [])
     })), [])
