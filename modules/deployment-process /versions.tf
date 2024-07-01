@@ -6,5 +6,9 @@ terraform {
       source  = "OctopusDeployLabs/octopusdeploy"
       version = "0.14.8"
     }
+    curl2 = {
+      source  = "DanielKoehler/curl2"
+      version = "1.7.2"
+    }
   }
 }

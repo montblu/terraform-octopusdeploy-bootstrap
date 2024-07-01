@@ -1,3 +1,57 @@
+resource "octopusdeploy_channel" "single-channel" {
+
+  for_each = var.project_names
+
+  name         = "${var.octopus_group_name} - single channel"
+  project_id   = octopusdeploy_project.all[each.key].id
+  lifecycle_id = octopusdeploy_lifecycle.from-stage-to-prod[0].id
+  is_default   = false
+
+}
+
+resource "octopusdeploy_docker_container_registry" "DockerHub" {
+
+  feed_uri    = "https://index.docker.io"
+  name        = var.octopus_dockerhub_feed_name
+  api_version = "v1"
+}
+
+resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
+
+  name        = "${var.octopus_group_name}-workers-Ubuntu"
+  space_id    = octopusdeploy_space.main.id
+  worker_type = "Ubuntu2204"
+  is_default  = true
+}
+
+resource "octopusdeploy_project" "all" {
+
+  for_each = var.project_names
+
+  space_id                             = octopusdeploy_space.main[0].id
+  auto_create_release                  = false
+  default_guided_failure_mode          = "EnvironmentDefault"
+  default_to_skip_if_already_installed = false
+  is_disabled                          = false
+  is_discrete_channel_release          = false
+  is_version_controlled                = false
+  lifecycle_id                         = octopusdeploy_lifecycle.from-stage-to-prod[0].id
+  name                                 = each.key
+  project_group_id                     = octopusdeploy_project_group.project_group[0].id
+  tenanted_deployment_participation    = "Untenanted"
+
+  connectivity_policy {
+    allow_deployments_to_no_targets = false
+    exclude_unhealthy_targets       = false
+    skip_machine_behavior           = "None"
+  }
+
+  depends_on = [
+    octopusdeploy_lifecycle.from-stage-to-prod,
+    octopusdeploy_project_group.project_group
+  ]
+}
+
 
 locals {
   octopusdeploy_environments = [for env in var.octopus_environments : data.octopusdeploy_environments.all[env].environments[0].id ]
@@ -5,8 +59,7 @@ locals {
 
 resource "octopusdeploy_deployment_process" "all" {
 
-  for_each = var.project_names
-
+  for_each = var.deployment
   project_id = octopusdeploy_project.all[each.key].id
 
 
@@ -45,7 +98,7 @@ EOT
   }
 
   dynamic "step" {
-    for_each = toset(lookup(each.value, "cronjobs", []))
+    for_each = var.cronjobs
     content {
       condition           = "Success"
       name                = "Set image for ${step.key}"
@@ -169,31 +222,31 @@ EOT
 ###############
 data "curl2" "slack_checkinstalled" {
   http_method = "GET"
-  uri         = "https://filingramp.octopus.app/api/communityactiontemplates/CommunityActionTemplates-370/actiontemplate"
+  uri         = "${var.octopus_url}/api/communityactiontemplates/CommunityActionTemplates-370/actiontemplate"
   headers = {
     accept : "application/json"
-    X-Octopus-ApiKey : "API-WOGJ1D5C2TUYUIFW3GSWUXBYOQT02"
+    X-Octopus-ApiKey : var.octopus_api_key
     Content-Type : "application/json"
   }
 }
 
 data "curl2" "slack_install" {
-  count       = data.curl2.slack_checkinstalled.response.status_code == 200 ? 0 : 1
+  count       = data.curl2.slack_checkinstalled.response.status_code == 200 || var.newrelic_enabled == "true" ? 0 : 1
   http_method = "POST"
-  uri         = "https://filingramp.octopus.app/api/communityactiontemplates/CommunityActionTemplates-370/installation"
+  uri         = "${var.octopus_url}/api/communityactiontemplates/CommunityActionTemplates-370/installation"
   headers = {
     accept : "application/json"
-    X-Octopus-ApiKey : "API-WOGJ1D5C2TUYUIFW3GSWUXBYOQT02"
+    X-Octopus-ApiKey : var.octopus_api_key
     Content-Type : "application/json"
   }
 }
 
 data "curl2" "slack_get_template_id" {
   http_method = "GET"
-  uri         = "https://filingramp.octopus.app/api/actiontemplates?partialName=Slack%20-%20Detailed%20Notification%20-%20Bash&take=1"
+  uri         = "${var.octopus_url}/api/actiontemplates?partialName=Slack%20-%20Detailed%20Notification%20-%20Bash&take=1"
   headers = {
     accept : "application/json"
-    X-Octopus-ApiKey : "API-WOGJ1D5C2TUYUIFW3GSWUXBYOQT02"
+    X-Octopus-ApiKey : var.octopus_api_key
     Content-Type : "application/json"
   }
   depends_on = [data.curl2.slack_install]
