@@ -1,38 +1,65 @@
 variable "octopus_environments" {
+  description = "The Octopus Environements"
+  type        = list(string)
+  default     = []
+}
+
+variable "environment" {
   description = "octopus_environments"
-  type        = list(string)
-  default     = null
-}
-
-variable "project_names" {
-  description = "Octopus project name list"
-  type        = list(string)
-  default     = null
-}
-
-variable "octopus_group_name" {
-  description = "Octopus group name list"
   type        = string
-  default     = null
+  default     = ""
+}
+
+variable "octopus_lifecycle_id" {
+  description = "The Octopus lifecycle id"
+  type        = string
+  default     = ""
+}
+
+variable "octopus_project_group_name" {
+  description = "The Octopus Project group name"
+  type        = string
+  default     = ""
+}
+
+variable "octopus_space_id" {
+  description = "The Octopus space id"
+  type        = string
+  default     = ""
 }
 
 variable "octopus_worker_tools_version" {
   description = "Octopus worker tools version"
   type        = string
-  default     = null
+  default = "6.1-ubuntu.22.04"
 }
 
-variable "k8s_set_image_deployment_command" {
-  description = "K8s set image command"
+variable "k8s_registry_url" {
+  description = "K8s registry url"
   type        = string
-  #default     = "kubectl set image deployment/${each.key} ${each.key}=360379118495.dkr.ecr.us-east-1.amazonaws.com/ramp-${each.key}-stage-default:$(get_octopusvariable "Octopus.Release.Number") && kubectl rollout status deployment ${each.key}"
 }
 
-variable "k8s_set_image_cronjob_command" {
-  description = "K8s set image command"
+variable "registry_prefix" {
+  description = "K8s service prefix"
   type        = string
-  #default     = "kubectl set image cronjob/${step.key} ${step.key}=360379118495.dkr.ecr.us-east-1.amazonaws.com/ramp-${each.key}-stage-default:$(get_octopusvariable "Octopus.Release.Number")"
 }
+
+variable "registry_sufix" {
+  type        = string
+  
+}
+
+variable "octopus_address" {
+  description = "Octopus URL"
+  type        = string
+  
+}
+
+variable "enable_slack" {
+  description = "Enable slack API notification"
+  type        = bool
+}
+
 
 variable "slack_webhook" {
   description = "slack webhook"
@@ -40,14 +67,30 @@ variable "slack_webhook" {
   default     = ""
 }
 
-variable "octopus_url" {
-  description = "Octopus URL"
+variable "slack_channel" {
+  description = "Slack channel"
   type        = string
   default     = ""
 }
 
-variable "slack_channel" {
-  description = "Slack channel"
+variable "deployment_projects" {
+  description = "Deployment list"
+}
+
+variable "octopus_dockerhub_feed_name" {
+  description = "Octopus DockerHub feed name"
+  type        = string
+  default     = ""
+}
+
+variable "enable_newrelic" {
+  description = "Enable newrelic API notification"
+  type        = bool
+}
+
+
+variable "newrelic_user" {
+  description = "NewRelic User"
   type        = string
   default     = ""
 }
@@ -62,33 +105,6 @@ variable "newrelic_guid" {
   description = "NewRelic GUID"
   type        = string
   default     = ""
-}
-
-variable "newrelic_user" {
-  description = "NewRelic User"
-  type        = string
-}
-
-variable "cronjobs" {
-  description = "Cronjob list"
-  type        = list(string)
-}
-
-variable "deployment" {
-  description = "Deployment list"
-  type        = list(string)
-}
-
-variable "octopus_dockerhub_feed_name" {
-  description = "Octopus DockerHub feed name"
-  type        = string
-  default     = null
-}
-
-variable "newrelic_enabled" {
-  description = "Enable newrelic api notification"
-  type        = bool
-  default     = false
 }
 
 variable "octopus_api_key" {
