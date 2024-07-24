@@ -1,5 +1,4 @@
 locals {
-
   # We need these with referenceable keys for lifecycles
   data_octopus_environments = {
     for element in data.octopusdeploy_environments.all.environments : 
@@ -7,22 +6,23 @@ locals {
   }
 }
 
-
 resource "octopusdeploy_project_group" "project_group" {
-  name     = var.octopus_group_name
-  space_id = octopusdeploy_space.main.id
+  count = var.octopus_project_group_name == "" ? 0 : 1
+  name     = var.octopus_project_group_name
+  space_id = octopusdeploy_space.main[0].id
 }
 
 resource "octopusdeploy_space" "main" {
-  name                 = var.octopus_group_name
+  count = var.octopus_project_group_name == "" ? 0 : 1
+  name                 = var.octopus_project_group_name
   is_default           = false
   space_managers_teams = ["teams-administrators", "teams-managers"]
 }
 
 resource "octopusdeploy_environment" "main" {
-  for_each                     = toset(var.octopus_environments)
+  for_each = toset(var.octopus_environments) 
   name                         = each.key
-  space_id                     = octopusdeploy_space.main.id
+  space_id                     = octopusdeploy_space.main[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
 }
@@ -33,7 +33,7 @@ resource "octopusdeploy_lifecycle" "lifecycles" {
 
   name        = each.value.name
   description = each.value.description
-  space_id    = octopusdeploy_space.main.id
+  space_id    = octopusdeploy_space.main[0].id
 
   release_retention_policy {
     quantity_to_keep    = each.value.release_retention_policy.quantity_to_keep

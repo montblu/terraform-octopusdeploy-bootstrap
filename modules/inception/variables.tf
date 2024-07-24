@@ -1,4 +1,4 @@
-variable "octopus_group_name" {
+variable "octopus_project_group_name" {
   description = "Octopus resource name"
   type        = string
   default     = null
@@ -8,6 +8,12 @@ variable "octopus_environments" {
   description = "octopus_environments"
   type        = list(string)
   default     = null
+}
+
+variable "environment" {
+  description = "octopus_environments"
+  type        = string
+
 }
 
 variable "lifecycles" {
