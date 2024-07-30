@@ -1,3 +1,4 @@
+#One env resource only
 resource "octopusdeploy_channel" "single-channel" {
   for_each = var.deployment_projects 
 
@@ -7,72 +8,16 @@ resource "octopusdeploy_channel" "single-channel" {
   lifecycle_id = var.octopus_lifecycle_id
   is_default   = false
   depends_on = [ octopusdeploy_deployment_process.all ]
-}
-
-resource "octopusdeploy_docker_container_registry" "DockerHub" {
-  space_id    = var.octopus_space_id
-  count       = var.octopus_dockerhub_feed_name == "" ? 0 : 1
-  feed_uri    = "https://index.docker.io"
-  name        = var.octopus_dockerhub_feed_name
-  api_version = "v1"
-}
+}#One env resource only
 
 resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
   count       = var.octopus_space_id == "" ? 0 : 1
   name        = "${var.octopus_project_group_name}-workers-Ubuntu"
   space_id    = var.octopus_space_id
   worker_type = "Ubuntu2204"
-  is_default  = true
+  is_default  = false
 }
-resource "octopusdeploy_kubernetes_cluster_deployment_target" "k8s" {
-
-  name                = "${var.registry_prefix}-${var.environment}"
-  environments        = [data.octopusdeploy_environments.all.id]
-  roles               = [data.octopusdeploy_environments.all.name]
-  cluster_certificate = octopusdeploy_certificate.k8s.id #var.k8s_cluster_certificate
-  cluster_url         = data.aws_eks_cluster.eks_cluster.endpoint #var.k8s_cluster_url
-  namespace           = "${var.registry_prefix}-${var.environment}" #var.k8s_namespace
-
-  authentication {
-    account_id = octopusdeploy_token_account.k8s.id
-  }
-
-  container {
-    feed_id = octopusdeploy_docker_container_registry.GitHub[0].id
-    image   = "montblu/workertools:${var.octopus_worker_tools_version}" #var.k8s_container_image
-  }
-
-  space_id          = var.octopus_space_id
-  machine_policy_id = data.octopusdeploy_machine_policies.default.machine_policies[0].id
-
-  depends_on = [
-    octopusdeploy_environment.main,
-    octopusdeploy_certificate.k8s,
-    data.aws_eks_cluster.eks_cluster,
-    octopusdeploy_token_account.k8s
-  ]
-}
-
-resource "octopusdeploy_certificate" "k8s" {
-  certificate_data = data.aws_eks_cluster.eks_cluster.certificate_authority[0].data #var.k8s_certificate_data
-  name             = "K8s Certificate - ${var.registry_prefix}-${var.environment}"
-  password         = "NOT USED" #var.k8s_certificate_password
-  environments     = [data.octopusdeploy_environments.all.name]
-}
-
-resource "octopusdeploy_token_account" "k8s" {
-  name         = "Token Account - ${var.registry_prefix}-${var.environment}"
-  token        = lookup(data.kubernetes_secret.octopus_token.data, "token") #var.k8s_account_token
-  environments = [data.octopusdeploy_environments.all.name]
-
-  depends_on = [
-    data.kubernetes_secret.octopus_token,
-    kubernetes_service_account.octopus,
-    data.aws_eks_cluster.eks_cluster,
-    octopusdeploy_environment.main
-  ]
-
-}
+#One env resource only
 resource "octopusdeploy_project" "all" {
   for_each = var.deployment_projects
 
@@ -102,7 +47,7 @@ resource "octopusdeploy_project" "all" {
 locals {
   octopusdeploy_environments = var.octopus_environments
 }
-
+#One env resource only
 resource "octopusdeploy_deployment_process" "all" {
   for_each = var.deployment_projects
 
@@ -126,7 +71,7 @@ resource "octopusdeploy_deployment_process" "all" {
       worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
       container {
-        feed_id =  octopusdeploy_docker_container_registry.DockerHub[0].id 
+        feed_id =  data.octopusdeploy_feeds.GitHub.id
         image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
       }
 
@@ -159,7 +104,7 @@ EOT
         worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
         container {
-          feed_id = octopusdeploy_docker_container_registry.DockerHub[0].id
+          feed_id = data.octopusdeploy_feeds.GitHub.id
           image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
         }
 

@@ -16,8 +16,12 @@ variable "environment" {
 
 }
 
-variable "lifecycles" {
+variable "create_space" {
+  default     = false
+  type        = bool
+}
 
+variable "lifecycles" {
   type = list(object({
     name        = string
     description = optional(string, "Default description")

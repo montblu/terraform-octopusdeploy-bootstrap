@@ -77,17 +77,10 @@ variable "deployment_projects" {
   description = "Deployment list"
 }
 
-variable "octopus_dockerhub_feed_name" {
-  description = "Octopus DockerHub feed name"
-  type        = string
-  default     = ""
-}
-
 variable "enable_newrelic" {
   description = "Enable newrelic API notification"
   type        = bool
 }
-
 
 variable "newrelic_user" {
   description = "NewRelic User"
@@ -109,6 +102,12 @@ variable "newrelic_guid" {
 
 variable "octopus_api_key" {
   description = "Octopus api key"
+  type        = string
+  default     = ""
+}
+
+variable "octopus_dockerhub_feed_name" {
+  description = "Octopus DockerHub feed name"
   type        = string
   default     = ""
 }

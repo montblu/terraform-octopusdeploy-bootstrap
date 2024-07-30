@@ -5,28 +5,47 @@ locals {
     element.name => element
   }
 }
-
+#All envs resource
+resource "octopusdeploy_user_role" "developers" {
+  name        =  var.environment 
+  description = "Responsible for all development-related operations."
+  granted_space_permissions = [
+    "DeploymentCreate",
+    "DeploymentDelete",
+    "DeploymentView",
+    "EnvironmentView",
+    "LifecycleView",
+    "ProcessView",
+    "ProjectGroupView",
+    "ProjectView",
+    "ReleaseView",
+    "TaskView",
+    "TenantView",
+  ]
+}
+#One env resource only
 resource "octopusdeploy_project_group" "project_group" {
-  count = var.octopus_project_group_name == "" ? 0 : 1
+  count = var.create_space == true ? 1 : 0
   name     = var.octopus_project_group_name
   space_id = octopusdeploy_space.main[0].id
 }
 
+#One env resource only
 resource "octopusdeploy_space" "main" {
-  count = var.octopus_project_group_name == "" ? 0 : 1
+  count = var.create_space == true ? 1 : 0
   name                 = var.octopus_project_group_name
   is_default           = false
   space_managers_teams = ["teams-administrators", "teams-managers"]
 }
 
+#All envs resource
 resource "octopusdeploy_environment" "main" {
-  for_each = toset(var.octopus_environments) 
-  name                         = each.key
-  space_id                     = octopusdeploy_space.main[0].id
+  name                         = var.environment
+  space_id                     = var.create_space == true ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
 }
-
+#One env resource only
 resource "octopusdeploy_lifecycle" "lifecycles" {
 
   for_each = {for lifecycle in var.lifecycles : lifecycle.name => lifecycle }
