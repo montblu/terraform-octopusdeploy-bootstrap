@@ -9,7 +9,11 @@ data "octopusdeploy_environments" "current"{
   take     = 1
 }
 
-
+data "octopusdeploy_project_groups" "ramp" {
+  partial_name = "ramp"
+  take         = 1
+  space_id = var.octopus_space_id
+}
 
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"

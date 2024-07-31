@@ -31,7 +31,7 @@ resource "octopusdeploy_project" "all" {
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_lifecycle_id
   name                                 = each.key
-  project_group_id                     = var.octopus_project_group_name
+  project_group_id                     = data.octopusdeploy_project_groups.ramp.project_groups[0].id
   tenanted_deployment_participation    = "Untenanted"
 
   connectivity_policy {
@@ -255,22 +255,17 @@ data "curl2" "slack_get_template_id" {
 #####
 # Slack Notification Variables
 #####
-/*
 resource "octopusdeploy_variable" "slack_webhook" {
   for_each        = var.deployment_projects
   space_id        = var.octopus_space_id
   name            = "HookUrl"
   type            = "Sensitive"
   is_sensitive    = true
-  owner_id        = octopusdeploy_project.all["${each.key}"].name
+  owner_id        = octopusdeploy_project.all["${each.key}"].id
   sensitive_value = var.slack_webhook
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-}
-
-output "data_env" {
-  value = data.octopusdeploy_environments.current.environments[0].id
 }
 
 resource "octopusdeploy_variable" "octopus_url" {
@@ -278,7 +273,7 @@ resource "octopusdeploy_variable" "octopus_url" {
   space_id = var.octopus_space_id
   name     = "OctopusBaseUrl"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = var.octopus_address
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -291,7 +286,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   space_id = var.octopus_space_id
   name     = "Channel"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "DUMMY"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -304,7 +299,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   space_id = var.octopus_space_id
   name     = "DeploymentInfoText"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -317,7 +312,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldRelease"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -329,7 +324,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldMachine"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -342,7 +337,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldProject"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -355,7 +350,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldEnvironment"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -368,7 +363,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldUsername"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -381,7 +376,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   space_id = var.octopus_space_id
   name     = "IncludeLinkOnFailure"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -394,7 +389,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   space_id = var.octopus_space_id
   name     = "IncludeErrorMessageOnFailure"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -412,7 +407,7 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
   space_id = var.octopus_space_id
   name         = "ApiKey"
   type         = "Sensitive"
-  owner_id     = octopusdeploy_project.all["${each.key}"].name
+  owner_id     = octopusdeploy_project.all["${each.key}"].id
   is_sensitive = true
   sensitive_value = var.newrelic_apikey
   scope {
@@ -426,10 +421,10 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   space_id = var.octopus_space_id
   name     = "newrelic_guid"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = var.octopus_address
   scope {
-    environments = [data.octopusdeploy_environments.current.environments[*].id]
+    environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 }
 
@@ -439,10 +434,9 @@ resource "octopusdeploy_variable" "newrelic_user" {
   space_id = var.octopus_space_id
   name     = "User"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].name
+  owner_id = octopusdeploy_project.all["${each.key}"].id
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
 }
-*/
