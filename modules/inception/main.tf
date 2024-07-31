@@ -25,14 +25,14 @@ resource "octopusdeploy_user_role" "developers" {
 }
 #One env resource only
 resource "octopusdeploy_project_group" "project_group" {
-  count = var.create_space == true ? 1 : 0
+  count = var.create_space ? 1 : 0
   name     = var.octopus_project_group_name
   space_id = octopusdeploy_space.main[0].id
 }
 
 #One env resource only
 resource "octopusdeploy_space" "main" {
-  count = var.create_space == true ? 1 : 0
+  count = var.create_space ? 1 : 0
   name                 = var.octopus_project_group_name
   is_default           = false
   space_managers_teams = ["teams-administrators", "teams-managers"]
@@ -41,7 +41,7 @@ resource "octopusdeploy_space" "main" {
 #All envs resource
 resource "octopusdeploy_environment" "main" {
   name                         = var.environment
-  space_id                     = var.create_space == true ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
+  space_id                     = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
 }
