@@ -40,7 +40,9 @@ resource "octopusdeploy_space" "main" {
 
 #All envs resource
 resource "octopusdeploy_environment" "main" {
-  name                         = var.environment
+  for_each = toset(var.octopus_environments) 
+  
+  name                         = each.key
   space_id                     = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
