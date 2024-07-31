@@ -7,7 +7,9 @@ locals {
 }
 #All envs resource
 resource "octopusdeploy_user_role" "developers" {
-  name        =  var.environment
+  for_each = toset(var.octopus_environments)
+  
+  name     = each.key
   description = "Responsible for all development-related operations."
   granted_space_permissions = [
     "DeploymentCreate",
