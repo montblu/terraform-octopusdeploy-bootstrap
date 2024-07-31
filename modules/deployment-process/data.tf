@@ -3,10 +3,13 @@ data "octopusdeploy_environments" "all" {
   space_id = var.octopus_space_id
 }
 
-data octopusdeploy_environments "current"{
+data "octopusdeploy_environments" "current"{
   name     = var.environment
   space_id = var.octopus_space_id
+  take     = 1
 }
+
+
 
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"

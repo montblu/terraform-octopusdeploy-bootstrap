@@ -3,12 +3,18 @@ data "octopusdeploy_environments" "all" {
   space_id = var.octopus_space_id
 }
 
+data "octopusdeploy_environments" "current"{
+  name     = var.environment
+  space_id = var.octopus_space_id
+}
+
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"
   space_id = var.octopus_space_id
 }
 
-data "octopusdeploy_environments" "current"{
-  name     = var.environment
-  space_id = var.octopus_space_id
+
+
+data "octopusdeploy_feeds" "docker" {
+  feed_type    = "Docker"
 }
