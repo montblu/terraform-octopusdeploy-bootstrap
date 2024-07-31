@@ -52,7 +52,7 @@ resource "octopusdeploy_lifecycle" "lifecycles" {
 
   name        = each.value.name
   description = each.value.description
-  space_id    = octopusdeploy_space.main[0].id
+  space_id    = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
 
   release_retention_policy {
     quantity_to_keep    = each.value.release_retention_policy.quantity_to_keep
