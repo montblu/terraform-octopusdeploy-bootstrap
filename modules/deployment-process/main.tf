@@ -1,13 +1,13 @@
 #One env resource only
 resource "octopusdeploy_channel" "single-channel" {
-  for_each = var.deployment_projects 
+  for_each = var.deployment_projects
 
-  name         = "${var.octopus_project_group_name} - single channel"
+  name         = "${var.octopus_project_group_name} - ${each.key} - single channel"
   space_id     = var.octopus_space_id
   project_id   = octopusdeploy_project.all[each.key].id
   lifecycle_id = var.octopus_lifecycle_id
   is_default   = false
-  depends_on = [ octopusdeploy_deployment_process.all ]
+  depends_on   = [octopusdeploy_deployment_process.all]
 }
 
 resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
@@ -31,7 +31,7 @@ resource "octopusdeploy_project" "all" {
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_lifecycle_id
   name                                 = each.key
-  project_group_id                     = data.octopusdeploy_project_groups.ramp.project_groups[0].id
+  project_group_id                     = data.octopusdeploy_project_groups.all.project_groups[0].id
   tenanted_deployment_participation    = "Untenanted"
 
   connectivity_policy {
@@ -52,9 +52,9 @@ locals {
 resource "octopusdeploy_deployment_process" "all" {
   for_each = var.deployment_projects
 
-  space_id = var.octopus_space_id
+  space_id   = var.octopus_space_id
   project_id = octopusdeploy_project.all[each.key].id
-  depends_on = [ octopusdeploy_project.all ]
+  depends_on = [octopusdeploy_project.all]
 
   # to update steps, and actions, we need to delete ALL STEPS first (via web console)
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/276
@@ -72,7 +72,7 @@ resource "octopusdeploy_deployment_process" "all" {
       worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
       container {
-        feed_id =  data.octopusdeploy_feeds.GitHub.id
+        feed_id = data.octopusdeploy_feeds.GitHub.id
         image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
       }
 
@@ -127,43 +127,43 @@ EOT
 
   # Another workaround for this issue
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
- dynamic "step" {
+  dynamic "step" {
     for_each = var.enable_slack == true ? var.deployment_projects : {}
     content {
-    condition           = "Always"
-    name                = "Slack Detailed Notification for ${each.key}"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = var.octopus_environments
-    run_script_action {
-      name = "Slack Template Notification"
-      action_template {
-        # This id can be found on the community template URL on octopus app
-        # https://filingramp.octopus.app/app#/Spaces-1/library/steptemplates/community/CommunityActionTemplates-370 
-        community_action_template_id = "CommunityActionTemplates-370"
-        version                      = 4
-        id                           = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
+      condition           = "Always"
+      name                = "Slack Detailed Notification for ${each.key}"
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
+      run_script_action {
+        name = "Slack Template Notification"
+        action_template {
+          # This id can be found on the community template URL on octopus app
+          # https://filingramp.octopus.app/app#/Spaces-1/library/steptemplates/community/CommunityActionTemplates-370
+          community_action_template_id = "CommunityActionTemplates-370"
+          version                      = 4
+          id                           = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
 
+        }
+        script_syntax = "Bash"
+        script_body   = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
       }
-      script_syntax = "Bash"
-      script_body   = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
-     }
     }
   }
 
   dynamic "step" {
     for_each = var.enable_newrelic == true ? var.deployment_projects : {}
     content {
-    condition           = "Success"
-    name                = "New Relic Deployment for ${each.key}"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    run_script_action {
-      name           = "New Relic Deployment for ${each.key}"
-      is_required    = true
-      worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
-      run_on_server  = "true"
-      script_body    = <<-EOT
+      condition           = "Success"
+      name                = "New Relic Deployment for ${each.key}"
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      run_script_action {
+        name           = "New Relic Deployment for ${each.key}"
+        is_required    = true
+        worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+        run_on_server  = "true"
+        script_body    = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
 RELEASE="$(get_octopusvariable "Octopus.Release.Number")"
 NOTES="$(get_octopusvariable "Octopus.Release.Notes")"
@@ -189,11 +189,11 @@ curl https://api.newrelic.com/graphql \
   --data-binary "$(generate_post_data)" \
   -s
 EOT
-      script_syntax  = "Bash"
-      script_source  = "Inline"
+        script_syntax  = "Bash"
+        script_source  = "Inline"
+      }
     }
   }
-}
 
   # Ugly workaround for an ugly provider
   lifecycle {
@@ -277,7 +277,7 @@ resource "octopusdeploy_variable" "octopus_url" {
   value    = var.octopus_address
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -290,7 +290,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   value    = "DUMMY"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -303,7 +303,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  
+
   }
 }
 
@@ -316,7 +316,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
@@ -328,7 +328,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -341,7 +341,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  
+
   }
 }
 
@@ -354,7 +354,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -380,7 +380,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -393,7 +393,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-    
+
   }
 }
 
@@ -403,16 +403,16 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 ##########
 
 resource "octopusdeploy_variable" "newrelic_apikey" {
-  for_each     = var.deployment_projects
-  space_id = var.octopus_space_id
-  name         = "ApiKey"
-  type         = "Sensitive"
-  owner_id     = octopusdeploy_project.all["${each.key}"].id
-  is_sensitive = true
+  for_each        = var.deployment_projects
+  space_id        = var.octopus_space_id
+  name            = "ApiKey"
+  type            = "Sensitive"
+  owner_id        = octopusdeploy_project.all["${each.key}"].id
+  is_sensitive    = true
   sensitive_value = var.newrelic_apikey
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  
+
   }
 }
 

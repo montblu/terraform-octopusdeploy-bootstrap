@@ -4,21 +4,15 @@ variable "octopus_project_group_name" {
   default     = null
 }
 
-variable "octopus_environments" {
-  description = "octopus_environments"
-  type        = list(string)
-  default     = null
-}
-
-variable "environment" {
-  description = "octopus_environments"
+variable "octopus_environment" {
+  description = "octopus_environment"
   type        = string
-
+  default     = ""
 }
 
 variable "create_space" {
-  default     = false
-  type        = bool
+  default = false
+  type    = bool
 }
 
 variable "lifecycles" {

@@ -4,16 +4,17 @@ data "octopusdeploy_environments" "all" {
 
 }
 
-data "octopusdeploy_environments" "current"{
-  name     = var.environment
+data "octopusdeploy_environments" "current" {
+  name     = var.octopus_environment
   space_id = var.octopus_space_id
 }
 
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"
-  space_id = var.octopus_space_id
+  space_id     = var.octopus_space_id
 }
 
-data "octopusdeploy_feeds" "docker" {
-  feed_type    = "Docker"
+data "octopusdeploy_feeds" "current" {
+  name     = var.octopus_dockerhub_feed_name
+  space_id = var.octopus_space_id
 }

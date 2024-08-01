@@ -1,13 +1,7 @@
-variable "environment" {
-  description = "octopus_environments"
+variable "octopus_environment" {
+  description = "octopus_environment"
   type        = string
   default     = ""
-}
-
-variable "octopus_environments" {
-  description = "octopus_environments"
-  type        = list(string)
-  default     = null
 }
 
 variable "octopus_space_id" {
@@ -58,3 +52,7 @@ variable "octopus_dockerhub_feed_name" {
   default     = ""
 }
 
+variable "create_space" {
+  default = false
+  type    = bool
+}
