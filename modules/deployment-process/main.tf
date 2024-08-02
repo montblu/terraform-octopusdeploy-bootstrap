@@ -72,7 +72,7 @@ resource "octopusdeploy_deployment_process" "all" {
       worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
       container {
-        feed_id = data.octopusdeploy_feeds.GitHub.id
+        feed_id = data.octopusdeploy_feeds.current.id
         image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
       }
 
@@ -105,7 +105,7 @@ EOT
         worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
         container {
-          feed_id = data.octopusdeploy_feeds.GitHub.id
+          feed_id = data.octopusdeploy_feeds.current.id
           image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
         }
 

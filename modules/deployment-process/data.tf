@@ -19,7 +19,7 @@ data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"
 }
 
-data "octopusdeploy_feeds" "GitHub" {
-  feed_type    = "Docker"
+data "octopusdeploy_feeds" "current" {
   partial_name = var.octopus_dockerhub_feed_name
+  space_id     = var.octopus_space_id
 }
