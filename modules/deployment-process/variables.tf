@@ -31,7 +31,7 @@ variable "octopus_space_id" {
 variable "octopus_worker_tools_version" {
   description = "Octopus worker tools version"
   type        = string
-  default = "6.1-ubuntu.22.04"
+  default     = "6.1-ubuntu.22.04"
 }
 
 variable "k8s_registry_url" {
@@ -42,24 +42,23 @@ variable "k8s_registry_url" {
 variable "registry_prefix" {
   description = "K8s service prefix"
   type        = string
+  default     = ""
 }
 
 variable "registry_sufix" {
-  type        = string
-  
+  type    = string
+  default = ""
 }
 
 variable "octopus_address" {
   description = "Octopus URL"
   type        = string
-  
 }
 
 variable "enable_slack" {
   description = "Enable slack API notification"
   type        = bool
 }
-
 
 variable "slack_webhook" {
   description = "slack webhook"

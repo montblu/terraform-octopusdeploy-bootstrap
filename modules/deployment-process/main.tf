@@ -2,7 +2,7 @@
 resource "octopusdeploy_channel" "single-channel" {
   for_each = var.deployment_projects
 
-  name         = "${var.octopus_project_group_name} - ${each.key} - single channel"
+  name         = "${each.key} - single channel"
   space_id     = var.octopus_space_id
   project_id   = octopusdeploy_project.all[each.key].id
   lifecycle_id = var.octopus_lifecycle_id
@@ -12,7 +12,7 @@ resource "octopusdeploy_channel" "single-channel" {
 
 resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
   count       = var.octopus_space_id == "" ? 0 : 1
-  name        = "${var.registry_prefix}-workers-Ubuntu"
+  name        = "${var.octopus_project_group_name}-workers-Ubuntu"
   space_id    = var.octopus_space_id
   worker_type = "Ubuntu2204"
   is_default  = true
@@ -72,8 +72,8 @@ resource "octopusdeploy_deployment_process" "all" {
       worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
       container {
-        feed_id = data.octopusdeploy_feeds.current.id
-        image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
+        feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+        image   = "montblu/workertools:${var.octopus_worker_tools_version}"
       }
 
       properties = {
@@ -105,8 +105,8 @@ EOT
         worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
 
         container {
-          feed_id = data.octopusdeploy_feeds.current.id
-          image   = "octopusdeploy/worker-tools:${var.octopus_worker_tools_version}"
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
         }
 
         properties = {
