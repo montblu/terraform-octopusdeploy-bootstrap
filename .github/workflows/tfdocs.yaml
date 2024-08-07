@@ -1,0 +1,21 @@
+name: Generate Tfdocs
+on:
+  - pull_request
+jobs:
+  submodule_matrix:
+    strategy:
+      matrix:
+        submodule: [inception, k8s-connector, deployment]
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        ref: ${{ github.event.pull_request.head.ref }}
+
+    - name: Render terraform docs inside the README.md and push changes back to PR branch
+      uses: terraform-docs/gh-actions@v1.2.0
+      with:
+        working-dir: ./modules/${{ matrix.submodule }}
+        output-file: README.md
+        output-method: inject
+        git-push: "true"
