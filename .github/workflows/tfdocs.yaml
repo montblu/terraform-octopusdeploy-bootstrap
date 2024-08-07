@@ -5,7 +5,7 @@ jobs:
   submodule_matrix:
     strategy:
       matrix:
-        submodule: [inception, k8s-connector, deployment]
+        submodule: [inception, k8s-connector, deployment-process]
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
