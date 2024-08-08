@@ -5,4 +5,4 @@ jobs:
   tfdocs:
     uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
     with:
-      module: "[inception, k8s-connector, deployment-process]"
+      modules-name: "[inception, k8s-connector, deployment-process]"
