@@ -9,4 +9,4 @@ jobs:
          module: [inception, k8s-connector, deployment-process]
    uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
    with:
-     target: ${{ matrix.target }}
+     target: ${{ matrix.module }}
