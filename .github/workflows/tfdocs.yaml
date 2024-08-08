@@ -1,8 +1,12 @@
 name: Generate Tfdocs
 on:
   - pull_request
+
 jobs:
-  tfdocs:
-    uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
-    with:
-      modules-name: "[inception, k8s-connector, deployment-process]"
+ module_matrix:
+   strategy:
+      matrix:
+         module: [inception, k8s-connector, deployment-process]
+   uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
+   with:
+     target: ${{ matrix.target }}
