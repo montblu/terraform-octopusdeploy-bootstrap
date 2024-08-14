@@ -5,10 +5,10 @@ locals {
     element.name => element
   }
 }
-#All envs resource
+#One env resource only
 resource "octopusdeploy_user_role" "developers" {
-
-  name        = var.octopus_environment
+  count       = var.create_space ? 1 : 0
+  name        = "${title(var.octopus_project_group_name)} - Developers "
   description = "Responsible for all development-related operations."
   granted_space_permissions = [
     "DeploymentCreate",
@@ -23,6 +23,15 @@ resource "octopusdeploy_user_role" "developers" {
     "TaskView",
     "TenantView",
   ]
+}
+#One env resource only
+resource "octopusdeploy_team" "developers" {
+  count       = var.create_space ? 1 : 0
+  name        = "${title(var.octopus_project_group_name)} - Developers "
+  user_role {
+    space_id     = octopusdeploy_space.main[0].id
+    user_role_id = octopusdeploy_user_role.developers[0].id
+  }
 }
 #One env resource only
 resource "octopusdeploy_project_group" "project_group" {

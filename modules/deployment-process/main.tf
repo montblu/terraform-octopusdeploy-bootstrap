@@ -81,7 +81,7 @@ resource "octopusdeploy_deployment_process" "all" {
         "Octopus.Action.Script.ScriptBody"              = <<-EOT
 #!/bin/bash
 set -e
-bash -c "kubectl set image deployment/${each.key} ${each.key}=${var.k8s_registry_url}/${var.registry_prefix}-${each.key}-${var.registry_sufix}:$(get_octopusvariable "Octopus.Release.Number") && kubectl rollout status deployment ${each.key}"
+bash -c "kubectl set image deployment/${each.key} ${each.key}=${var.k8s_registry_url}/${var.registry_prefix}${var.registry_prefix != "" ? "-" : ""}${each.key}${var.registry_sufix != "" ? "-" : ""}${var.registry_sufix}:$(get_octopusvariable "Octopus.Release.Number") && kubectl rollout status deployment ${each.key}"
 
 EOT
         "Octopus.Action.Script.Syntax"                  = "Bash"
