@@ -27,7 +27,7 @@ resource "octopusdeploy_user_role" "developers" {
 #One env resource only
 resource "octopusdeploy_team" "developers" {
   count       = var.create_space ? 1 : 0
-  name        = "${title(var.octopus_project_group_name)} - Developers "
+  name        = "${title(var.octopus_project_group_name)} - Developers"
   user_role {
     space_id     = octopusdeploy_space.main[0].id
     user_role_id = octopusdeploy_user_role.developers[0].id
