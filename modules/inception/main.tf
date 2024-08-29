@@ -11,11 +11,16 @@ resource "octopusdeploy_user_role" "developers" {
   name        = "${title(var.octopus_project_group_name)} - Developers"
   description = "Responsible for all development-related operations."
   granted_space_permissions = [
+    "AccountView",
+    "CertificateView",
     "DeploymentCreate",
     "DeploymentDelete",
     "DeploymentView",
     "EnvironmentView",
+    "FeedView",
     "LifecycleView",
+    "MachinePolicyView",
+    "MachineView",
     "ProcessView",
     "ProjectGroupView",
     "ProjectView",
