@@ -8,7 +8,7 @@ locals {
 #One env resource only
 resource "octopusdeploy_user_role" "developers" {
   count       = var.create_space ? 1 : 0
-  name        = "${title(var.octopus_project_group_name)} - Developers "
+  name        = "${title(var.octopus_project_group_name)} - Developers"
   description = "Responsible for all development-related operations."
   granted_space_permissions = [
     "DeploymentCreate",
