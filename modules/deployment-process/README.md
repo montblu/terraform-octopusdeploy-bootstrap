@@ -143,7 +143,7 @@ No modules.
 | <a name="input_octopus_project_group_name"></a> [octopus\_project\_group\_name](#input\_octopus\_project\_group\_name) | The Octopus Project group name | `string` | `""` | no |
 | <a name="input_octopus_space_id"></a> [octopus\_space\_id](#input\_octopus\_space\_id) | The Octopus space id | `string` | `""` | no |
 | <a name="input_octopus_worker_tools_version"></a> [octopus\_worker\_tools\_version](#input\_octopus\_worker\_tools\_version) | Octopus worker tools version | `string` | `"6.1-ubuntu.22.04"` | no |
-| <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | <pre>{<br>  "optional_step1": {<br>    "name": "step1",<br>    "script_body": "kubectl "<br>  },<br>  "optional_step2": {<br>    "name": "step2",<br>    "script_body": "kubectl "<br>  }<br>}</pre> | no |
+| <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | `{}` | no |
 | <a name="input_registry_prefix"></a> [registry\_prefix](#input\_registry\_prefix) | K8s service prefix | `string` | `""` | no |
 | <a name="input_registry_sufix"></a> [registry\_sufix](#input\_registry\_sufix) | n/a | `string` | `""` | no |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | Slack channel | `string` | `""` | no |
