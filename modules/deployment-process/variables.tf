@@ -113,6 +113,7 @@ variable "octopus_dockerhub_feed_name" {
 
 variable "optional_steps" {
   default     = { 
+  /*  
     optional_step1 = {
       name = "step1"
       script_body = "kubectl "
@@ -120,6 +121,7 @@ variable "optional_steps" {
     optional_step2 = {
       name = "step2"
       script_body = "kubectl "
-    }
+    }   
+   */
  }
 }
