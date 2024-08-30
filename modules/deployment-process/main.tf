@@ -195,6 +195,35 @@ EOT
     }
   }
 
+dynamic "step" {
+    for_each = var.optional_steps
+    content {
+      condition           = "Success"
+      name                = "${lookup(step.value, "name", "")} - ${each.key}"
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
+
+      run_kubectl_script_action {
+        name           =  "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
+        is_required    = true
+        worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+
+        container {
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+        }
+
+        properties = {
+          run_on_server                                   = true
+          "Octopus.Action.Script.ScriptBody"              = lookup(step.value, "script_body", "")
+          "Octopus.Action.Script.Syntax"                  = "Bash"
+          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+        }
+      }
+    }
+  }
+
   # Ugly workaround for an ugly provider
   lifecycle {
     ignore_changes = [
