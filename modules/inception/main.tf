@@ -49,7 +49,7 @@ resource "octopusdeploy_project_group" "project_group" {
 resource "octopusdeploy_space" "main" {
   count                = var.create_space ? 1 : 0
   name                 = var.octopus_project_group_name
-  is_default           = true
+  is_default           = false
   space_managers_teams = ["teams-administrators", "teams-managers"]
 }
 
