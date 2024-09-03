@@ -432,7 +432,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 ##########
 
 resource "octopusdeploy_variable" "newrelic_apikey" {
-  for_each        = var.deployment_projects
+  for_each        = var.enable_newrelic ? var.deployment_projects : []
   space_id        = var.octopus_space_id
   name            = "ApiKey"
   type            = "Sensitive"
@@ -446,7 +446,7 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
 }
 
 resource "octopusdeploy_variable" "newrelic_guid" {
-  for_each = var.deployment_projects
+  for_each = var.enable_newrelic ? var.deployment_projects : []
   space_id = var.octopus_space_id
   name     = "newrelic_guid"
   type     = "String"
@@ -459,7 +459,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
 
 
 resource "octopusdeploy_variable" "newrelic_user" {
-  for_each = var.deployment_projects
+  for_each = var.enable_newrelic ? var.deployment_projects : []
   space_id = var.octopus_space_id
   name     = "User"
   type     = "String"
