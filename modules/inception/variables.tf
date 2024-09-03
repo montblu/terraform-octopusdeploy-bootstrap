@@ -39,3 +39,9 @@ variable "lifecycles" {
 
   default = []
 }
+
+variable "octopus_github_feed_name" {
+  description = "Octopus Github feed name"
+  type        = string
+  default     = "Github Container Registry"
+}
