@@ -46,10 +46,10 @@ variable "k8s_cluster_url" {
   type        = string
 }
 
-variable "octopus_dockerhub_feed_name" {
-  description = "Octopus DockerHub feed name"
+variable "octopus_github_feed_name" {
+  description = "Octopus Github feed name"
   type        = string
-  default     = ""
+  default     = "Github Container Registry"
 }
 
 variable "create_space" {

@@ -105,15 +105,15 @@ variable "octopus_api_key" {
   default     = ""
 }
 
-variable "octopus_dockerhub_feed_name" {
-  description = "Octopus DockerHub feed name"
+variable "octopus_github_feed_name" {
+  description = "Octopus Github feed name"
   type        = string
-  default     = ""
+  default     = "Github Container Registry"
 }
 
 variable "optional_steps" {
-  default     = { 
-  /*  
+  default = {
+    /*  
     optional_step1 = {
       name = "step1"
       script_body = "kubectl "
@@ -123,5 +123,5 @@ variable "optional_steps" {
       script_body = "kubectl "
     }   
    */
- }
+  }
 }

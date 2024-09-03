@@ -15,6 +15,6 @@ data "octopusdeploy_machine_policies" "default" {
 }
 
 data "octopusdeploy_feeds" "current" {
-  partial_name = var.octopus_dockerhub_feed_name
+  partial_name = var.octopus_github_feed_name
   space_id     = var.octopus_space_id
 }
