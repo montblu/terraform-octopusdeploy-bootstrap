@@ -137,8 +137,8 @@ No modules.
 | <a name="input_newrelic_user"></a> [newrelic\_user](#input\_newrelic\_user) | NewRelic User | `string` | `""` | no |
 | <a name="input_octopus_address"></a> [octopus\_address](#input\_octopus\_address) | Octopus URL | `string` | n/a | yes |
 | <a name="input_octopus_api_key"></a> [octopus\_api\_key](#input\_octopus\_api\_key) | Octopus api key | `string` | `""` | no |
-| <a name="input_octopus_dockerhub_feed_name"></a> [octopus\_dockerhub\_feed\_name](#input\_octopus\_dockerhub\_feed\_name) | Octopus DockerHub feed name | `string` | `""` | no |
 | <a name="input_octopus_environments"></a> [octopus\_environments](#input\_octopus\_environments) | The Octopus Environements | `list(string)` | `[]` | no |
+| <a name="input_octopus_github_feed_name"></a> [octopus\_github\_feed\_name](#input\_octopus\_github\_feed\_name) | Octopus Github feed name | `string` | `"Github Container Registry"` | no |
 | <a name="input_octopus_lifecycle_id"></a> [octopus\_lifecycle\_id](#input\_octopus\_lifecycle\_id) | The Octopus lifecycle id | `string` | `""` | no |
 | <a name="input_octopus_project_group_name"></a> [octopus\_project\_group\_name](#input\_octopus\_project\_group\_name) | The Octopus Project group name | `string` | `""` | no |
 | <a name="input_octopus_space_id"></a> [octopus\_space\_id](#input\_octopus\_space\_id) | The Octopus space id | `string` | `""` | no |
