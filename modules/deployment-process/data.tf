@@ -17,6 +17,7 @@ data "octopusdeploy_project_groups" "all" {
 
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"
+  space_id = var.octopus_space_id
 }
 
 data "octopusdeploy_feeds" "current" {
