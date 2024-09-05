@@ -15,6 +15,7 @@ data "octopusdeploy_lifecycles" "all" {
 
 data "octopusdeploy_project_groups" "all" {
   partial_name = var.octopus_project_group_name
+  space_id = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
 }
 
 data "octopusdeploy_space" "space" {
