@@ -63,8 +63,7 @@ resource "octopusdeploy_environment" "main" {
 }
 #One env resource only
 resource "octopusdeploy_lifecycle" "lifecycles" {
-
-  for_each = { for lifecycle in var.lifecycles : lifecycle.name => lifecycle }
+  for_each = var.create_space ? { for lifecycle in var.lifecycles : lifecycle.name => lifecycle } : {}
 
   name        = each.value.name
   description = each.value.description
