@@ -1,3 +1,15 @@
+locals {
+  channels = flatten([
+    for project in var.deployment_projects: [
+      for channel in var.channels: {
+        name         = "${project} - ${lookup(channel, "name")}"
+        project_id   = octopusdeploy_project.all[project].id
+        lifecycle_id = lookup(channel, "lifecycle_id", var.octopus_lifecycle_id)
+      }
+    ]
+  ])
+}
+
 #One env resource only
 resource "octopusdeploy_channel" "single-channel" {
   for_each = var.deployment_projects
@@ -119,7 +131,7 @@ bash -c "kubectl set image cronjob/${step.key} ${step.key}=${var.k8s_registry_ur
 
 EOT
           "Octopus.Action.Script.Syntax"                  = "Bash"
-          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+      "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
         }
       }
     }
