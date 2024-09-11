@@ -1,6 +1,6 @@
 locals {
   channels = flatten([
-    for project in var.deployment_projects : [
+    for project in local.projects : [
       for channel in var.channels : {
         name         = "${project} - ${lookup(channel, "name")}"
         project_id   = lookup(channel, "project_id", octopusdeploy_project.all[project].id)
@@ -12,7 +12,7 @@ locals {
 
 #One env resource only
 resource "octopusdeploy_channel" "single-channel" {
-  for_each = var.deployment_projects
+  for_each = var.projects
 
   name         = "${each.key} - single channel"
   space_id     = var.octopus_space_id
@@ -32,7 +32,7 @@ resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
 
 #One env resource only
 resource "octopusdeploy_project" "all" {
-  for_each = var.deployment_projects
+  for_each = var.projects
 
   space_id                             = var.octopus_space_id
   auto_create_release                  = false
@@ -62,7 +62,7 @@ locals {
 }
 #One env resource only
 resource "octopusdeploy_deployment_process" "all" {
-  for_each = var.deployment_projects
+  for_each = var.projects
 
   space_id   = var.octopus_space_id
   project_id = octopusdeploy_project.all[each.key].id
@@ -140,7 +140,7 @@ EOT
   # Another workaround for this issue
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
   dynamic "step" {
-    for_each = var.enable_slack == true ? var.deployment_projects : {}
+    for_each = var.enable_slack == true ? var.projects : {}
     content {
       condition           = "Always"
       name                = "Slack Detailed Notification for ${each.key}"
@@ -164,7 +164,7 @@ EOT
   }
 
   dynamic "step" {
-    for_each = var.enable_newrelic == true ? var.deployment_projects : {}
+    for_each = var.enable_newrelic == true ? var.projects : {}
     content {
       condition           = "Success"
       name                = "New Relic Deployment for ${each.key}"
@@ -297,7 +297,7 @@ data "curl2" "slack_get_template_id" {
 # Slack Notification Variables
 #####
 resource "octopusdeploy_variable" "slack_webhook" {
-  for_each        = var.enable_slack ? var.deployment_projects : {}
+  for_each        = var.enable_slack ? var.projects : {}
   space_id        = var.octopus_space_id
   name            = "HookUrl"
   type            = "Sensitive"
@@ -310,7 +310,7 @@ resource "octopusdeploy_variable" "slack_webhook" {
 }
 
 resource "octopusdeploy_variable" "octopus_url" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "OctopusBaseUrl"
   type     = "String"
@@ -323,7 +323,7 @@ resource "octopusdeploy_variable" "octopus_url" {
 }
 
 resource "octopusdeploy_variable" "slack_channel" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "Channel"
   type     = "String"
@@ -336,7 +336,7 @@ resource "octopusdeploy_variable" "slack_channel" {
 }
 
 resource "octopusdeploy_variable" "DeploymentInfoText" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "DeploymentInfoText"
   type     = "String"
@@ -349,7 +349,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldRelease" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldRelease"
   type     = "String"
@@ -361,7 +361,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   }
 }
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldMachine"
   type     = "String"
@@ -374,7 +374,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldProject" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldProject"
   type     = "String"
@@ -387,7 +387,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldEnvironment"
   type     = "String"
@@ -400,7 +400,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldUsername" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldUsername"
   type     = "String"
@@ -413,7 +413,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
 }
 
 resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeLinkOnFailure"
   type     = "String"
@@ -426,7 +426,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
-  for_each = var.enable_slack ? var.deployment_projects : {}
+  for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeErrorMessageOnFailure"
   type     = "String"
@@ -444,7 +444,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 ##########
 
 resource "octopusdeploy_variable" "newrelic_apikey" {
-  for_each        = var.enable_newrelic ? var.deployment_projects : {}
+  for_each        = var.enable_newrelic ? var.projects : {}
   space_id        = var.octopus_space_id
   name            = "ApiKey"
   type            = "Sensitive"
@@ -458,7 +458,7 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
 }
 
 resource "octopusdeploy_variable" "newrelic_guid" {
-  for_each = var.enable_newrelic ? var.deployment_projects : {}
+  for_each = var.enable_newrelic ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "newrelic_guid"
   type     = "String"
@@ -471,7 +471,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
 
 
 resource "octopusdeploy_variable" "newrelic_user" {
-  for_each = var.enable_newrelic ? var.deployment_projects : {}
+  for_each = var.enable_newrelic ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "User"
   type     = "String"

@@ -72,8 +72,9 @@ variable "slack_channel" {
   default     = ""
 }
 
-variable "deployment_projects" {
-  description = "Deployment list"
+variable "projects" {
+  description = "Projects list"
+  type        = list(string)
 }
 
 variable "enable_newrelic" {
