@@ -125,3 +125,17 @@ variable "optional_steps" {
    */
   }
 }
+
+variable "channels" {
+  description = "Octopus channels to create per project"
+  type = list(object({
+    name         = string
+    project_id   = optional(string)
+    lifecycle_id = optional(string)
+  }))
+  default = [
+    {
+      name = "main"
+    }
+  ]
+}
