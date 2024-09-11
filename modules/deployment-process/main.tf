@@ -2,8 +2,8 @@ locals {
   channels = flatten([
     for project in var.deployment_projects : [
       for channel in var.channels : {
-        name         = "${project} - ${lookup(channel, "name")}"
-        project_id   = lookup(channel, "project_id", octopusdeploy_project.all[project].id)
+        name         = "${project.key} - ${lookup(channel, "name")}"
+        project_id   = lookup(channel, "project_id", octopusdeploy_project.all[project.key].id)
         lifecycle_id = lookup(channel, "lifecycle_id", var.octopus_lifecycle_id)
       }
     ]
