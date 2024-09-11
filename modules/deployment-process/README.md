@@ -127,6 +127,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
+| <a name="input_channels"></a> [channels](#input\_channels) | Octopus channels to create per project | <pre>list(object({<br>    name         = string<br>    project_id   = optional(string)<br>    lifecycle_id = optional(string)<br>  }))</pre> | <pre>[<br>  {<br>    "name": "main"<br>  }<br>]</pre> | no |
 | <a name="input_deployment_projects"></a> [deployment\_projects](#input\_deployment\_projects) | Deployment list | `any` | n/a | yes |
 | <a name="input_enable_newrelic"></a> [enable\_newrelic](#input\_enable\_newrelic) | Enable newrelic API notification | `bool` | n/a | yes |
 | <a name="input_enable_slack"></a> [enable\_slack](#input\_enable\_slack) | Enable slack API notification | `bool` | n/a | yes |
