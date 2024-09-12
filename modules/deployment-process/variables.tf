@@ -138,8 +138,9 @@ variable "channels" {
   }))
   default = [
     {
-      name       = "main",
-      is_default = "true"
+      name        = "main",
+      description = "Default channel."
+      is_default  = "true"
     }
   ]
 }
