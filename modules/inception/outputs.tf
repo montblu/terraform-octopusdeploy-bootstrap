@@ -5,10 +5,10 @@ output "octopus_space_id" {
 }
 
 output "octopus_lifecycle" {
-  value       = try(octopusdeploy_lifecycle.lifecycles["${var.lifecycles[0].name}"].id, "")
+  value       = try(octopusdeploy_lifecycle.main["${var.lifecycles[0].name}"].id, "")
   description = "The Octopus lifecycle id"
   sensitive   = false
-  depends_on  = [octopusdeploy_lifecycle.lifecycles]
+  depends_on  = [octopusdeploy_lifecycle.main]
 }
 
 output "octopus_project_group_name" {
@@ -21,5 +21,10 @@ output "octopus_environment" {
   value       = try(data.octopusdeploy_environments.all.environments[*].name, "")
   description = "The Octopus environments list."
   sensitive   = false
+}
+
+output "lifecycles" {
+  value       = octopusdeploy_lifecycle.main
+  description = "The list of lifecycles created."
 }
 
