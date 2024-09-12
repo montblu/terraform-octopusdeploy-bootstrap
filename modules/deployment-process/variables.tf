@@ -72,8 +72,9 @@ variable "slack_channel" {
   default     = ""
 }
 
-variable "deployment_projects" {
-  description = "Deployment list"
+variable "projects" {
+  description = "Projects list"
+  type        = map(any)
 }
 
 variable "enable_newrelic" {
@@ -124,4 +125,22 @@ variable "optional_steps" {
     }   
    */
   }
+}
+
+variable "channels" {
+  description = "Octopus channels to create per project"
+  type = list(object({
+    description  = optional(string, "")
+    is_default   = optional(string, false)
+    lifecycle_id = optional(string, "")
+    name         = string
+    project_id   = optional(string, "")
+  }))
+  default = [
+    {
+      name        = "main",
+      description = "Default channel."
+      is_default  = "true"
+    }
+  ]
 }
