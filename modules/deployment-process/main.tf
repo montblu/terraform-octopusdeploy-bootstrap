@@ -14,15 +14,16 @@ locals {
 }
 
 #One env resource only
-resource "octopusdeploy_channel" "single-channel" {
-  for_each = var.projects
+resource "octopusdeploy_channel" "main" {
+  for_each = { for channel in local.channels : "${channel.project_name} ${channel.name}" => channel }
 
-  name         = "${each.key} - single channel"
+  name         = each.value.name
   space_id     = var.octopus_space_id
-  project_id   = octopusdeploy_project.all[each.key].id
-  lifecycle_id = var.octopus_lifecycle_id
-  is_default   = false
-  depends_on   = [octopusdeploy_deployment_process.all]
+  project_id   = each.value.project_id
+  lifecycle_id = each.value.lifecycle_id
+  is_default   = each.value.is_default
+
+  depends_on = [octopusdeploy_deployment_process.all]
 }
 
 resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
