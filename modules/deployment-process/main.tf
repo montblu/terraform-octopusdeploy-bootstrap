@@ -2,11 +2,11 @@ locals {
   channels = flatten([
     for project_key, project_value in var.projects : [
       for channel in var.channels : {
-        description  = lookup(channel, "description", "")
-        is_default   = lookup(channel, "is_default", false)
-        lifecycle_id = lookup(channel, "lifecycle_id", var.octopus_lifecycle_id)
-        name         = lookup(channel, "name")
-        project_id   = lookup(channel, "project_id", octopusdeploy_project.all[project_key].id)
+        description  = channel["description"]
+        is_default   = channel["is_default"]
+        lifecycle_id = channel["lifecycle_id"] == "" ? var.octopus_lifecycle_id : channel["lifecycle_id"]
+        name         = channel["name"]
+        project_id   = channel["project_id"] == "" ? octopusdeploy_project.all[project_key].id : channel["project_id"]
       }
     ]
   ])
