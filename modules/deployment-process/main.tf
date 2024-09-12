@@ -7,6 +7,7 @@ locals {
         lifecycle_id = channel["lifecycle_id"] == "" ? var.octopus_lifecycle_id : channel["lifecycle_id"]
         name         = channel["name"]
         project_id   = channel["project_id"] == "" ? octopusdeploy_project.all[project_key].id : channel["project_id"]
+        project_name = project_key
       }
     ]
   ])
