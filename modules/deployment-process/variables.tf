@@ -74,7 +74,7 @@ variable "slack_channel" {
 
 variable "projects" {
   description = "Projects list"
-  type        = list(string)
+  type        = map(any)
 }
 
 variable "enable_newrelic" {
