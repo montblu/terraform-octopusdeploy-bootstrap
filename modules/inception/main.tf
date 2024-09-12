@@ -55,7 +55,7 @@ resource "octopusdeploy_environment" "main" {
   use_guided_failure           = false
 }
 #One env resource only
-resource "octopusdeploy_lifecycle" "lifecycles" {
+resource "octopusdeploy_lifecycle" "main" {
   for_each = var.create_space ? { for lifecycle in var.lifecycles : lifecycle.name => lifecycle } : {}
 
   name        = each.value.name
