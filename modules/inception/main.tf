@@ -1,10 +1,3 @@
-locals {
-  # We need these with referenceable keys for lifecycles
-  data_octopus_environment = {
-    for element in data.octopusdeploy_environments.all.environments :
-    element.name => element
-  }
-}
 #One env resource only
 resource "octopusdeploy_user_role" "developers" {
   count       = var.create_space ? 1 : 0
@@ -81,10 +74,7 @@ resource "octopusdeploy_lifecycle" "lifecycles" {
       is_optional_phase                     = phase.value.is_optional_phase
       name                                  = phase.value.name
       minimum_environments_before_promotion = phase.value.minimum_environments_before_promotion
-      optional_deployment_targets = [
-        for env in phase.value.optional_deployment_targets :
-        local.data_octopus_environment[env].id
-      ]
+      optional_deployment_targets           = phase.value.optional_deployment_targets
     }
   }
 
