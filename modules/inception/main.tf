@@ -75,6 +75,7 @@ resource "octopusdeploy_lifecycle" "lifecycles" {
       name                                  = phase.value.name
       minimum_environments_before_promotion = phase.value.minimum_environments_before_promotion
       optional_deployment_targets           = phase.value.optional_deployment_targets
+      automatic_deployment_targets          = phase.value.optional_deployment_targets
     }
   }
 
