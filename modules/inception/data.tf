@@ -9,16 +9,16 @@ data "octopusdeploy_environments" "all" {
 }
 
 data "octopusdeploy_lifecycles" "all" {
-  space_id = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
-  depends_on = [ octopusdeploy_lifecycle.lifecycles ]
+  space_id   = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
+  depends_on = [octopusdeploy_lifecycle.main]
 }
 
 data "octopusdeploy_project_groups" "all" {
   partial_name = var.octopus_project_group_name
-  space_id = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
+  space_id     = var.create_space ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
 }
 
 data "octopusdeploy_space" "space" {
-  count = var.create_space ? 0 : 1 
+  count = var.create_space ? 0 : 1
   name  = var.octopus_project_group_name
 }
