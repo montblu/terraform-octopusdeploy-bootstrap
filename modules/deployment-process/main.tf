@@ -95,11 +95,71 @@ resource "octopusdeploy_deployment_process" "all" {
       properties = {
         run_on_server                                   = true
         "Octopus.Action.Script.ScriptBody"              = <<-EOT
-#!/bin/bash
-set -e
-bash -c "kubectl set image deployment/${each.key} ${each.key}=${var.k8s_registry_url}/${var.registry_prefix}${var.registry_prefix != "" ? "-" : ""}${each.key}${var.registry_sufix != "" ? "-" : ""}${var.registry_sufix}:$(get_octopusvariable "Octopus.Release.Number") && kubectl rollout status deployment ${each.key}"
 
-EOT
+  #!/bin/bash
+
+  set -e
+
+  ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
+  PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
+  DEPLOYMENT="${var.octopus_project_group_name}-$ENVIRONMENT-$PROJECTNAME"
+  RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
+  DOCKER_IMAGE="${var.k8s_registry_url}/${var.registry_prefix}-$PROJECTNAME:$RELEASENUMBER"
+  # Get list of all the containers in the Deployment including init containers
+  IFS=" " read -r -a ALL_CONTAINERS <<< "$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.spec.template.spec.containers[*].name} {.spec.template.spec.initContainers[*].name}")"
+  # Container names selected from the value coming from annotation 'octopus.containers.set' in the deployment
+  OCTOPUS_ANNOTATION=$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.metadata.annotations.octopus\.containers\.set}")
+  CONTAINERS=()
+
+  if [ -z "$OCTOPUS_ANNOTATION" ]
+  then
+      # If the annotation is missing or empty we set the image for all containers
+      SELECTED_CONTAINERS=("$${ALL_CONTAINERS[@]}")
+  else
+      # Otherwise we use the containers from the annotation
+      IFS="," read -a SELECTED_CONTAINERS <<< "$OCTOPUS_ANNOTATION"
+  fi
+
+  # Create an array with container names and image Ex:["container1=image" "container2=image"]
+  for container in "$${SELECTED_CONTAINERS[@]}"
+  do
+      CONTAINERS+=( "$container=$DOCKER_IMAGE" )
+  done
+
+  # Set Image to the containers
+  kubectl set image "deployment/$DEPLOYMENT" $${CONTAINERS[@]}
+
+  # Wait for deployment to became Healthy
+  kubectl rollout status "deployment/$DEPLOYMENT"
+  # Get list of all the containers in the Deployment including init containers
+  IFS=" " read -r -a ALL_CONTAINERS <<< "$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.spec.template.spec.containers[*].name} {.spec.template.spec.initContainers[*].name}")"
+  # Container names selected from the value coming from annotation 'octopus.containers.set' in the deployment
+  OCTOPUS_ANNOTATION=$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.metadata.annotations.octopus\.containers\.set}")
+  CONTAINERS=()
+
+  if [ -z "$OCTOPUS_ANNOTATION" ]
+  then
+      # If the annotation is missing or empty we set the image for all containers
+      SELECTED_CONTAINERS=("$${ALL_CONTAINERS[@]}")
+  else
+      # Otherwise we use the containers from the annotation
+      IFS="," read -a SELECTED_CONTAINERS <<< "$OCTOPUS_ANNOTATION"
+  fi
+
+  # Create an array with container names and image Ex:["container1=image" "container2=image"]
+  for container in "$${SELECTED_CONTAINERS[@]}"
+  do
+      CONTAINERS+=( "$container=$DOCKER_IMAGE" )
+  done
+
+  # Set Image to the containers
+  kubectl set image "deployment/$DEPLOYMENT" $${CONTAINERS[@]}
+
+  # Wait for deployment to became Healthy
+  kubectl rollout status "deployment/$DEPLOYMENT"
+
+
+  EOT
         "Octopus.Action.Script.Syntax"                  = "Bash"
         "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
       }
