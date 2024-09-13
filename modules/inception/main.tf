@@ -81,8 +81,8 @@ resource "octopusdeploy_lifecycle" "main" {
       is_optional_phase                     = phase.value.is_optional_phase
       name                                  = phase.value.name
       minimum_environments_before_promotion = phase.value.minimum_environments_before_promotion
-      optional_deployment_targets           = phase.value.optional_deployment_targets
-      automatic_deployment_targets          = phase.value.automatic_deployment_targets
+      optional_deployment_targets           = [for env in phase.value.optional_deployment_targets : local.envs[env].id]
+      automatic_deployment_targets          = [for env in phase.value.automatic_deployment_targets : local.envs[env].id]
     }
   }
 
