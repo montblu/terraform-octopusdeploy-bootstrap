@@ -1,3 +1,10 @@
+locals {
+  envs = {
+    for env in data.octopusdeploy_environments.all.environments :
+    env.name => env
+  }
+}
+
 #One env resource only
 resource "octopusdeploy_user_role" "developers" {
   count       = var.create_space ? 1 : 0
