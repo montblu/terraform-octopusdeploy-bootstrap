@@ -11,7 +11,7 @@ output "octopus_project_group_name" {
 }
 
 output "octopus_environment" {
-  value       = try(data.octopusdeploy_environments.all.environments[*].name, "")
+  value       = try(local.envs, "")
   description = "The Octopus environments list."
   sensitive   = false
 }
