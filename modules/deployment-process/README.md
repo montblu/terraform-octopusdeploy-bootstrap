@@ -100,7 +100,6 @@ No modules.
 |------|------|
 | [octopusdeploy_channel.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/channel) | resource |
 | [octopusdeploy_deployment_process.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/deployment_process) | resource |
-| [octopusdeploy_dynamic_worker_pool.ubuntu](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/dynamic_worker_pool) | resource |
 | [octopusdeploy_project.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/project) | resource |
 | [octopusdeploy_variable.DeploymentInfoText](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.IncludeErrorMessageOnFailure](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
@@ -110,6 +109,7 @@ No modules.
 | [octopusdeploy_variable.IncludeFieldRelease](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.IncludeFieldUsername](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.IncludeLinkOnFailure](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
+| [octopusdeploy_variable.ecr_url](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.newrelic_apikey](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.newrelic_guid](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.newrelic_user](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
@@ -122,16 +122,19 @@ No modules.
 | [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/feeds) | data source |
 | [octopusdeploy_machine_policies.default](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/machine_policies) | data source |
 | [octopusdeploy_project_groups.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/project_groups) | data source |
+| [octopusdeploy_projects.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/projects) | data source |
+| [octopusdeploy_worker_pools.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/worker_pools) | data source |
 
 ## Inputs
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_channels"></a> [channels](#input\_channels) | Octopus channels to create per project | <pre>list(object({<br>    description  = optional(string, "")<br>    is_default   = optional(string, false)<br>    lifecycle_id = optional(string, "")<br>    name         = string<br>    project_id   = optional(string, "")<br>  }))</pre> | <pre>[<br>  {<br>    "description": "Default channel.",<br>    "is_default": "true",<br>    "name": "main"<br>  }<br>]</pre> | no |
+| <a name="input_create_global_resources"></a> [create\_global\_resources](#input\_create\_global\_resources) | The environment responsible for creating base global resources, i.e. deployment process | `bool` | `false` | no |
+| <a name="input_ecr_url"></a> [ecr\_url](#input\_ecr\_url) | K8s registry url | `string` | n/a | yes |
 | <a name="input_enable_newrelic"></a> [enable\_newrelic](#input\_enable\_newrelic) | Enable newrelic API notification | `bool` | n/a | yes |
 | <a name="input_enable_slack"></a> [enable\_slack](#input\_enable\_slack) | Enable slack API notification | `bool` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | octopus\_environments | `string` | `""` | no |
-| <a name="input_k8s_registry_url"></a> [k8s\_registry\_url](#input\_k8s\_registry\_url) | K8s registry url | `string` | n/a | yes |
 | <a name="input_newrelic_apikey"></a> [newrelic\_apikey](#input\_newrelic\_apikey) | NewRelic APIKEY | `string` | `""` | no |
 | <a name="input_newrelic_guid"></a> [newrelic\_guid](#input\_newrelic\_guid) | NewRelic GUID | `string` | `""` | no |
 | <a name="input_newrelic_user"></a> [newrelic\_user](#input\_newrelic\_user) | NewRelic User | `string` | `""` | no |
@@ -145,7 +148,6 @@ No modules.
 | <a name="input_octopus_worker_tools_version"></a> [octopus\_worker\_tools\_version](#input\_octopus\_worker\_tools\_version) | Octopus worker tools version | `string` | `"6.1-ubuntu.22.04"` | no |
 | <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | `{}` | no |
 | <a name="input_projects"></a> [projects](#input\_projects) | Projects list | `map(any)` | n/a | yes |
-| <a name="input_registry_prefix"></a> [registry\_prefix](#input\_registry\_prefix) | K8s service prefix | `string` | `""` | no |
 | <a name="input_registry_sufix"></a> [registry\_sufix](#input\_registry\_sufix) | n/a | `string` | `""` | no |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | Slack channel | `string` | `""` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | slack webhook | `string` | `""` | no |
