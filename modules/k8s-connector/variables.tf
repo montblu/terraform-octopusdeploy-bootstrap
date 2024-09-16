@@ -10,8 +10,8 @@ variable "octopus_space_id" {
   default     = ""
 }
 
-variable "registry_prefix" {
-  description = "K8s service prefix"
+variable "octopus_project_group_name" {
+  description = "Project Group name"
   type        = string
 }
 
@@ -52,7 +52,7 @@ variable "octopus_github_feed_name" {
   default     = "Github Container Registry"
 }
 
-variable "create_space" {
+variable "create_global_resources" {
   default = false
   type    = bool
 }

@@ -1,42 +1,27 @@
 locals {
-  channels = flatten([
-    for project_key, project_value in var.projects : [
-      for channel in var.channels : {
-        description  = channel["description"]
-        is_default   = channel["is_default"]
-        lifecycle_id = channel["lifecycle_id"] == "" ? var.octopus_lifecycle_id : channel["lifecycle_id"]
-        name         = channel["name"]
-        project_id   = channel["project_id"] == "" ? octopusdeploy_project.all[project_key].id : channel["project_id"]
-        project_name = project_key
-      }
-    ]
-  ])
+  channels = merge([
+    for project_key, _ in var.projects : {
+      for channel in var.channels : "${project_key} ${channel.name}" => merge(tomap(channel), {project_name = project_key})
+    }
+  ]...)
 }
 
-#One env resource only
+# One env resource only
 resource "octopusdeploy_channel" "main" {
-  for_each = { for channel in local.channels : "${channel.project_name} ${channel.name}" => channel }
+  for_each = var.create_global_resources ? local.channels : {}
 
   name         = each.value.name
   space_id     = var.octopus_space_id
-  project_id   = each.value.project_id
-  lifecycle_id = each.value.lifecycle_id
+  project_id   = each.value.project_id == "" ? octopusdeploy_project.all[each.value.project_name].id : each.value.project_id
+  lifecycle_id = each.value.lifecycle_id == "" ? var.octopus_lifecycle_id : each.value.lifecycle_id
   is_default   = each.value.is_default
 
   depends_on = [octopusdeploy_deployment_process.all]
 }
 
-resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
-  count       = var.octopus_space_id == "" ? 0 : 1
-  name        = "${var.octopus_project_group_name}-workers-Ubuntu"
-  space_id    = var.octopus_space_id
-  worker_type = "Ubuntu2204"
-  is_default  = true
-}
-
-#One env resource only
+# One env resource only
 resource "octopusdeploy_project" "all" {
-  for_each = var.projects
+  for_each = var.create_global_resources ? var.projects : {}
 
   space_id                             = var.octopus_space_id
   auto_create_release                  = false
@@ -60,16 +45,12 @@ resource "octopusdeploy_project" "all" {
   ]
 }
 
-
-locals {
-  octopusdeploy_environments = var.octopus_environments
-}
-#One env resource only
+# One env resource only
 resource "octopusdeploy_deployment_process" "all" {
-  for_each = var.projects
+  for_each = var.create_global_resources ? var.projects : {}
 
   space_id   = var.octopus_space_id
-  project_id = octopusdeploy_project.all[each.key].id
+  project_id = local.data_all_projects[each.key].id
   depends_on = [octopusdeploy_project.all]
 
   # to update steps, and actions, we need to delete ALL STEPS first (via web console)
@@ -85,7 +66,7 @@ resource "octopusdeploy_deployment_process" "all" {
     run_kubectl_script_action {
       name           = "Set image for ${each.key}"
       is_required    = true
-      worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+      worker_pool_id = local.data_worker_pool.id
 
       container {
         feed_id = data.octopusdeploy_feeds.current.feeds[0].id
@@ -104,7 +85,7 @@ resource "octopusdeploy_deployment_process" "all" {
   PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
   DEPLOYMENT="${var.octopus_project_group_name}-$ENVIRONMENT-$PROJECTNAME"
   RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
-  DOCKER_IMAGE="${var.k8s_registry_url}/${var.registry_prefix}-$PROJECTNAME:$RELEASENUMBER"
+  DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
   # Get list of all the containers in the Deployment including init containers
   IFS=" " read -r -a ALL_CONTAINERS <<< "$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.spec.template.spec.containers[*].name} {.spec.template.spec.initContainers[*].name}")"
   # Container names selected from the value coming from annotation 'octopus.containers.set' in the deployment
@@ -178,7 +159,7 @@ resource "octopusdeploy_deployment_process" "all" {
       run_kubectl_script_action {
         name           = "Set image for ${step.key}"
         is_required    = true
-        worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+        worker_pool_id = local.data_worker_pool.id
 
         container {
           feed_id = data.octopusdeploy_feeds.current.feeds[0].id
@@ -190,8 +171,15 @@ resource "octopusdeploy_deployment_process" "all" {
           "Octopus.Action.Script.ScriptBody"              = <<-EOT
 #!/bin/bash
 set -e
+
+ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
+PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
+DEPLOYMENT="${var.octopus_project_group_name}-$ENVIRONMENT-$PROJECTNAME"
+RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
+
+
 bash -c "kubectl version"
-bash -c "kubectl set image cronjob/${step.key} ${step.key}=${var.k8s_registry_url}/${var.registry_prefix}-${each.key}-${var.registry_sufix}:$(get_octopusvariable "Octopus.Release.Number")"
+bash -c "kubectl set image cronjob/${step.key} ${step.key}=$(get_octopusvariable "ecr_url")/$DEPLOYMENT-${each.key}-${var.registry_sufix}:$RELEASENUMBER"
 
 EOT
           "Octopus.Action.Script.Syntax"                  = "Bash"
@@ -237,7 +225,7 @@ EOT
       run_script_action {
         name           = "New Relic Deployment for ${each.key}"
         is_required    = true
-        worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+        worker_pool_id = local.data_worker_pool.id
         run_on_server  = "true"
         script_body    = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
@@ -283,7 +271,7 @@ EOT
       run_kubectl_script_action {
         name           = "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
         is_required    = true
-        worker_pool_id = octopusdeploy_dynamic_worker_pool.ubuntu[0].id
+        worker_pool_id = local.data_worker_pool.id
 
         container {
           feed_id = data.octopusdeploy_feeds.current.feeds[0].id
@@ -318,6 +306,26 @@ EOT
       step[4].run_script_action
     ]
   }
+}
+
+#####
+# ECR Variables
+#####
+resource "octopusdeploy_variable" "ecr_url" {
+  for_each        = var.projects
+
+  space_id        = var.octopus_space_id
+  name            = "ecr_url"
+  type            = "String"
+  owner_id        = local.data_all_projects[each.key].id
+  value           = var.ecr_url
+  scope {
+    environments = [data.octopusdeploy_environments.current.environments[0].id]
+  }
+
+  depends_on = [
+    octopusdeploy_project.all
+  ]
 }
 
 ###############
@@ -366,7 +374,7 @@ resource "octopusdeploy_variable" "slack_webhook" {
   name            = "HookUrl"
   type            = "Sensitive"
   is_sensitive    = true
-  owner_id        = octopusdeploy_project.all["${each.key}"].id
+  owner_id        = local.data_all_projects[each.key].id
   sensitive_value = var.slack_webhook
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
@@ -378,7 +386,7 @@ resource "octopusdeploy_variable" "octopus_url" {
   space_id = var.octopus_space_id
   name     = "OctopusBaseUrl"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = var.octopus_address
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -391,7 +399,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   space_id = var.octopus_space_id
   name     = "Channel"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "DUMMY"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -404,7 +412,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   space_id = var.octopus_space_id
   name     = "DeploymentInfoText"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -417,7 +425,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldRelease"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -429,7 +437,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldMachine"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -442,7 +450,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldProject"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -455,7 +463,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldEnvironment"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -468,7 +476,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
   space_id = var.octopus_space_id
   name     = "IncludeFieldUsername"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -481,7 +489,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   space_id = var.octopus_space_id
   name     = "IncludeLinkOnFailure"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -494,7 +502,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   space_id = var.octopus_space_id
   name     = "IncludeErrorMessageOnFailure"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
@@ -512,7 +520,7 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
   space_id        = var.octopus_space_id
   name            = "ApiKey"
   type            = "Sensitive"
-  owner_id        = octopusdeploy_project.all["${each.key}"].id
+  owner_id        = local.data_all_projects[each.key].id
   is_sensitive    = true
   sensitive_value = var.newrelic_apikey
   scope {
@@ -526,7 +534,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   space_id = var.octopus_space_id
   name     = "newrelic_guid"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = var.octopus_address
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
@@ -539,7 +547,7 @@ resource "octopusdeploy_variable" "newrelic_user" {
   space_id = var.octopus_space_id
   name     = "User"
   type     = "String"
-  owner_id = octopusdeploy_project.all["${each.key}"].id
+  owner_id = local.data_all_projects[each.key].id
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
