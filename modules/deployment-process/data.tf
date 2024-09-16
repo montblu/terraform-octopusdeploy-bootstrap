@@ -25,8 +25,8 @@ data "octopusdeploy_feeds" "current" {
   space_id     = var.octopus_space_id
 }
 
-data  "octopusdeploy_projects" "all" {
-  space_id     = var.octopus_space_id
+data "octopusdeploy_projects" "all" {
+  space_id = var.octopus_space_id
 }
 
 data "octopusdeploy_worker_pools" "all" {
@@ -35,6 +35,6 @@ data "octopusdeploy_worker_pools" "all" {
 
 # Provider is not able to search only one pool with the name, so we need this hack to search it ourselves
 locals {
-  data_worker_pool  = {for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker}["${var.octopus_project_group_name}-workers-Ubuntu"]
-  data_all_projects = {for project in data.octopusdeploy_projects.all.projects : project.name => project}
+  data_worker_pool  = { for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker }["${var.octopus_project_group_name}-workers-Ubuntu"]
+  data_all_projects = { for project in data.octopusdeploy_projects.all.projects : project.name => project }
 }

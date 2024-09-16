@@ -1,7 +1,7 @@
 locals {
   channels = merge([
     for project_key, _ in var.projects : {
-      for channel in var.channels : "${project_key} ${channel.name}" => merge(tomap(channel), {project_name = project_key})
+      for channel in var.channels : "${project_key} ${channel.name}" => merge(tomap(channel), { project_name = project_key })
     }
   ]...)
 }
@@ -312,13 +312,13 @@ EOT
 # ECR Variables
 #####
 resource "octopusdeploy_variable" "ecr_url" {
-  for_each        = var.projects
+  for_each = var.projects
 
-  space_id        = var.octopus_space_id
-  name            = "ecr_url"
-  type            = "String"
-  owner_id        = local.data_all_projects[each.key].id
-  value           = var.ecr_url
+  space_id = var.octopus_space_id
+  name     = "ecr_url"
+  type     = "String"
+  owner_id = local.data_all_projects[each.key].id
+  value    = var.ecr_url
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }

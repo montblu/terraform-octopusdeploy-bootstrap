@@ -28,5 +28,5 @@ data "octopusdeploy_worker_pools" "all" {
 
 # Provider is not able to search only one pool with the name, so we need this hack to search it ourselves
 locals {
-  data_worker_pool = {for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker}["${var.octopus_project_group_name}-workers-Ubuntu"]
+  data_worker_pool = { for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker }["${var.octopus_project_group_name}-workers-Ubuntu"]
 }

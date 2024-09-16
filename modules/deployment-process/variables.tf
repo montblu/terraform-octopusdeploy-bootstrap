@@ -1,7 +1,7 @@
 variable "create_global_resources" {
   description = "The environment responsible for creating base global resources, i.e. deployment process"
-  default = false
-  type    = bool
+  default     = false
+  type        = bool
 }
 
 variable "octopus_environments" {
