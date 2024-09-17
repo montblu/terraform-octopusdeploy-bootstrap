@@ -1,3 +1,9 @@
+variable "create_global_resources" {
+  description = "The environment responsible for creating base global resources, i.e. deployment process"
+  default     = false
+  type        = bool
+}
+
 variable "octopus_environments" {
   description = "The Octopus Environements"
   type        = list(string)
@@ -34,15 +40,9 @@ variable "octopus_worker_tools_version" {
   default     = "6.1-ubuntu.22.04"
 }
 
-variable "k8s_registry_url" {
+variable "ecr_url" {
   description = "K8s registry url"
   type        = string
-}
-
-variable "registry_prefix" {
-  description = "K8s service prefix"
-  type        = string
-  default     = ""
 }
 
 variable "registry_sufix" {
