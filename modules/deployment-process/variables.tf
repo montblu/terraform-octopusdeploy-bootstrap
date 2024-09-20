@@ -28,6 +28,11 @@ variable "octopus_project_group_name" {
   default     = ""
 }
 
+variable "octopus_organization_prefix" {
+  description = "The organization prefix for the deployment process script to build the full ECR URL"
+  type        = string
+}
+
 variable "octopus_space_id" {
   description = "The Octopus space id"
   type        = string
