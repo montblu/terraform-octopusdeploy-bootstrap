@@ -83,7 +83,7 @@ resource "octopusdeploy_deployment_process" "all" {
 
   ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
   PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-  DEPLOYMENT="${var.octopus_project_group_name}-$ENVIRONMENT-$PROJECTNAME"
+  DEPLOYMENT="${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"
   RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
   DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
   # Get list of all the containers in the Deployment including init containers
@@ -174,7 +174,7 @@ set -e
 
 ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
 PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-DEPLOYMENT="${var.octopus_project_group_name}-$ENVIRONMENT-$PROJECTNAME"
+DEPLOYMENT="${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"
 RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
 
 

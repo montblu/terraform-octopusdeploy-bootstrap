@@ -10,7 +10,7 @@ variable "octopus_environment" {
   default     = ""
 }
 
-variable "create_space" {
+variable "create_global_resources" {
   default = false
   type    = bool
 }

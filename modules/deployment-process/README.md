@@ -143,6 +143,7 @@ No modules.
 | <a name="input_octopus_environments"></a> [octopus\_environments](#input\_octopus\_environments) | The Octopus Environements | `list(string)` | `[]` | no |
 | <a name="input_octopus_github_feed_name"></a> [octopus\_github\_feed\_name](#input\_octopus\_github\_feed\_name) | Octopus Github feed name | `string` | `"Github Container Registry"` | no |
 | <a name="input_octopus_lifecycle_id"></a> [octopus\_lifecycle\_id](#input\_octopus\_lifecycle\_id) | The Octopus lifecycle id | `string` | `""` | no |
+| <a name="input_octopus_organization_prefix"></a> [octopus\_organization\_prefix](#input\_octopus\_organization\_prefix) | The organization prefix for the deployment process script to build the full ECR URL | `string` | n/a | yes |
 | <a name="input_octopus_project_group_name"></a> [octopus\_project\_group\_name](#input\_octopus\_project\_group\_name) | The Octopus Project group name | `string` | `""` | no |
 | <a name="input_octopus_space_id"></a> [octopus\_space\_id](#input\_octopus\_space\_id) | The Octopus space id | `string` | `""` | no |
 | <a name="input_octopus_worker_tools_version"></a> [octopus\_worker\_tools\_version](#input\_octopus\_worker\_tools\_version) | Octopus worker tools version | `string` | `"6.1-ubuntu.22.04"` | no |
