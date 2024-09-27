@@ -192,7 +192,7 @@ EOT
   # Another workaround for this issue
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
   dynamic "step" {
-    for_each = var.enable_slack ? {1} : {} # We iterace once per project if slack is enabled.
+    for_each = var.enable_slack ? toset([1]) : [] # We iterace once per project if slack is enabled.
     content {
       condition           = "Always"
       name                = "Slack Detailed Notification for ${each.key}"
@@ -216,7 +216,7 @@ EOT
   }
 
   dynamic "step" {
-    for_each = var.enable_newrelic ? {1} : {} # We iterace once per project if newrelic is enabled.
+    for_each = var.enable_newrelic ? toset([1]) : [] # We iterace once per project if newrelic is enabled.
     content {
       condition           = "Success"
       name                = "New Relic Deployment for ${each.key}"
