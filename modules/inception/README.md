@@ -84,7 +84,7 @@ No modules.
 
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
-| <a name="input_create_space"></a> [create\_space](#input\_create\_space) | n/a | `bool` | `false` | no |
+| <a name="input_create_global_resources"></a> [create\_global\_resources](#input\_create\_global\_resources) | n/a | `bool` | `false` | no |
 | <a name="input_lifecycles"></a> [lifecycles](#input\_lifecycles) | n/a | <pre>list(object({<br>    name        = string<br>    description = optional(string, "Default description")<br>    release_retention_policy = optional(object({<br>      quantity_to_keep    = optional(number, 30)<br>      should_keep_forever = optional(bool, false)<br>      unit                = optional(string, "Days")<br>      }), {<br>      quantity_to_keep    = 30<br>      should_keep_forever = false<br>      unit                = "Days"<br>      }<br>    )<br>    phases = optional(list(object({<br>      name                                  = string<br>      is_optional_phase                     = optional(bool, false)<br>      minimum_environments_before_promotion = optional(number, 1)<br>      optional_deployment_targets           = optional(list(string), [])<br>      automatic_deployment_targets          = optional(list(string), [])<br>    })), [])<br>  }))</pre> | `[]` | no |
 | <a name="input_octopus_environment"></a> [octopus\_environment](#input\_octopus\_environment) | octopus\_environment | `string` | `""` | no |
 | <a name="input_octopus_github_feed_name"></a> [octopus\_github\_feed\_name](#input\_octopus\_github\_feed\_name) | Octopus Github feed name | `string` | `"Github Container Registry"` | no |
