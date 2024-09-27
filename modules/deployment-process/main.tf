@@ -4,6 +4,14 @@ locals {
       for channel in var.channels : "${project_key} ${channel.name}" => merge(tomap(channel), { project_name = project_key })
     }
   ]...)
+
+  # To avoid adding the complexity of an object, we format the map with certain attributes that we need to use for the deployment
+  projects_formatted = {
+    for project_key, project_value in var.projects : project_key => merge(project_value, {
+      create_main_step = can(project_value.create_main_step) ? project_value.create_main_step : true # True as default
+      cronjobs = can(project_value.cronjobs) ? project_value.cronjobs : [] # Empty list as a default list
+    })
+  }
 }
 
 # One env resource only
@@ -47,7 +55,7 @@ resource "octopusdeploy_project" "all" {
 
 # One env resource only
 resource "octopusdeploy_deployment_process" "all" {
-  for_each = var.create_global_resources ? var.projects : {}
+  for_each = var.create_global_resources ? local.projects_formatted : {}
 
   space_id   = var.octopus_space_id
   project_id = local.data_all_projects[each.key].id
@@ -57,7 +65,7 @@ resource "octopusdeploy_deployment_process" "all" {
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/276
 
   dynamic "step" {
-    for_each = lookup(each.value, "create_main_step", true) ? toset([1]) : [] # We iterace once per project if create_main_step is set to true, which by default is.
+    for_each = each.value.create_main_step ? toset([1]) : [] # We iterace once per project if create_main_step is set to true, which by default is.
     content {
       condition           = "Success"
       name                = "Set image on for ${each.key}"
@@ -151,7 +159,7 @@ resource "octopusdeploy_deployment_process" "all" {
   }
 
   dynamic "step" {
-    for_each = can(each.value.cronjobs) ? toset(each.value.cronjobs) : []
+    for_each = toset(each.value.cronjobs)
     content {
       condition           = "Success"
       name                = "Set image for ${step.key}"
