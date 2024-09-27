@@ -321,7 +321,7 @@ EOT
           image   = "montblu/workertools:${var.octopus_worker_tools_version}"
         }
 
-        properties = step.properties
+        properties = step.value.properties
       }
     }
   }
