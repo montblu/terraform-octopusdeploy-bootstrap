@@ -149,3 +149,13 @@ variable "channels" {
     }
   ]
 }
+
+variable "newrelic_resource_name_prefix" {
+  type    = string
+  default = ""
+}
+
+variable "newrelic_resource_name_suffix" {
+  type    = string
+  default = ""
+}

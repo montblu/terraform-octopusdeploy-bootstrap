@@ -535,7 +535,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   name     = "newrelic_guid"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
-  value    = var.octopus_address
+  value    = data.newrelic_entity.this[each.key].guid
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
