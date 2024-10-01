@@ -81,6 +81,7 @@ No outputs.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
 | <a name="requirement_curl2"></a> [curl2](#requirement\_curl2) | 1.7.2 |
+| <a name="requirement_newrelic"></a> [newrelic](#requirement\_newrelic) | 3.27.7 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
 
 ## Providers
@@ -88,6 +89,7 @@ No outputs.
 | Name | Version |
 |------|---------|
 | <a name="provider_curl2"></a> [curl2](#provider\_curl2) | 1.7.2 |
+| <a name="provider_newrelic"></a> [newrelic](#provider\_newrelic) | 3.27.7 |
 | <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | 0.22.0 |
 
 ## Modules
@@ -117,6 +119,7 @@ No modules.
 | [octopusdeploy_variable.slack_channel](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.slack_webhook](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [curl2_curl2.slack_get_template_id](https://registry.terraform.io/providers/DanielKoehler/curl2/1.7.2/docs/data-sources/curl2) | data source |
+| [newrelic_entity.this](https://registry.terraform.io/providers/newrelic/newrelic/3.27.7/docs/data-sources/entity) | data source |
 | [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
 | [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
 | [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/feeds) | data source |
@@ -137,6 +140,8 @@ No modules.
 | <a name="input_environment"></a> [environment](#input\_environment) | octopus\_environments | `string` | `""` | no |
 | <a name="input_newrelic_apikey"></a> [newrelic\_apikey](#input\_newrelic\_apikey) | NewRelic APIKEY | `string` | `""` | no |
 | <a name="input_newrelic_guid"></a> [newrelic\_guid](#input\_newrelic\_guid) | NewRelic GUID | `string` | `""` | no |
+| <a name="input_newrelic_resource_name_prefix"></a> [newrelic\_resource\_name\_prefix](#input\_newrelic\_resource\_name\_prefix) | n/a | `string` | `""` | no |
+| <a name="input_newrelic_resource_name_suffix"></a> [newrelic\_resource\_name\_suffix](#input\_newrelic\_resource\_name\_suffix) | n/a | `string` | `""` | no |
 | <a name="input_newrelic_user"></a> [newrelic\_user](#input\_newrelic\_user) | NewRelic User | `string` | `""` | no |
 | <a name="input_octopus_address"></a> [octopus\_address](#input\_octopus\_address) | Octopus URL | `string` | n/a | yes |
 | <a name="input_octopus_api_key"></a> [octopus\_api\_key](#input\_octopus\_api\_key) | Octopus api key | `string` | `""` | no |
