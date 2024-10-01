@@ -56,26 +56,28 @@ resource "octopusdeploy_deployment_process" "all" {
   # to update steps, and actions, we need to delete ALL STEPS first (via web console)
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/276
 
-  step {
-    condition           = "Success"
-    name                = "Set image on for ${each.key}"
-    package_requirement = "LetOctopusDecide"
-    start_trigger       = "StartAfterPrevious"
-    target_roles        = var.octopus_environments
+  dynamic "step" {
+    for_each = each.value.create_main_step ? toset([1]) : [] # We iterace once per project if create_main_step is set to true, which by default is.
+    content {
+      condition           = "Success"
+      name                = "Set image on for ${each.key}"
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
 
-    run_kubectl_script_action {
-      name           = "Set image for ${each.key}"
-      is_required    = true
-      worker_pool_id = local.data_worker_pool.id
+      run_kubectl_script_action {
+        name           = "Set image for ${each.key}"
+        is_required    = true
+        worker_pool_id = local.data_worker_pool.id
 
-      container {
-        feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-        image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-      }
+        container {
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+        }
 
-      properties = {
-        run_on_server                                   = true
-        "Octopus.Action.Script.ScriptBody"              = <<-EOT
+        properties = {
+          run_on_server                                   = true
+          "Octopus.Action.Script.ScriptBody"              = <<-EOT
 
   #!/bin/bash
 
@@ -141,14 +143,15 @@ resource "octopusdeploy_deployment_process" "all" {
 
 
   EOT
-        "Octopus.Action.Script.Syntax"                  = "Bash"
-        "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+          "Octopus.Action.Script.Syntax"                  = "Bash"
+          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+        }
       }
     }
   }
 
   dynamic "step" {
-    for_each = toset(lookup(each.value, "cronjobs", []))
+    for_each = toset(each.value.cronjobs)
     content {
       condition           = "Success"
       name                = "Set image for ${step.key}"
@@ -259,6 +262,7 @@ EOT
     }
   }
 
+  # Global optional_steps (?)
   dynamic "step" {
     for_each = var.optional_steps
     content {
@@ -284,6 +288,31 @@ EOT
           "Octopus.Action.Script.Syntax"                  = "Bash"
           "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
         }
+      }
+    }
+  }
+
+  # Project specific optional_steps (?)
+  dynamic "step" {
+    for_each = each.value.optional_steps
+    content {
+      condition           = "Success"
+      name                = step.value.name
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
+
+      run_kubectl_script_action {
+        name           = "Optional Step for - ${each.key}"
+        is_required    = step.value.is_required
+        worker_pool_id = local.data_worker_pool.id
+
+        container {
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+        }
+
+        properties = step.value.properties
       }
     }
   }
