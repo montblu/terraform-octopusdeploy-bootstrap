@@ -10,6 +10,10 @@ terraform {
       source  = "DanielKoehler/curl2"
       version = "1.7.2"
     }
+     newrelic = {
+      source  = "newrelic/newrelic"
+      version = "3.27.7"
+    }
   }
 }
 
