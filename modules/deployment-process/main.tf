@@ -85,7 +85,7 @@ resource "octopusdeploy_deployment_process" "all" {
 
   ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
   PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-  DEPLOYMENT="${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"
+  DEPLOYMENT=${var.simplify_deployment_name ? "$PROJECTNAME" : "${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"}
   RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
   DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
   # Get list of all the containers in the Deployment including init containers
@@ -177,7 +177,7 @@ set -e
 
 ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
 PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-DEPLOYMENT="${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"
+DEPLOYMENT=${var.simplify_deployment_name ? "$PROJECTNAME" : "${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"}
 RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
 
 
@@ -564,7 +564,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   name     = "newrelic_guid"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
-  value    = data.newrelic_entity.this[each.key].guid
+  value    = var.newrelic_guid
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }

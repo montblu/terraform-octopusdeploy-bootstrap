@@ -167,3 +167,9 @@ variable "newrelic_resource_name_suffix" {
   type    = string
   default = ""
 }
+
+variable "simplify_deployment_name" {
+  description = "Removes Organization and Env prefix from deployment name on the deployment process script body"
+  type = bool
+  default = false
+}
