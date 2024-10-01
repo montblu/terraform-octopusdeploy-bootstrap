@@ -79,7 +79,15 @@ variable "slack_channel" {
 
 variable "projects" {
   description = "Projects list"
-  type        = map(any)
+  type        = map(object({
+    create_main_step = optional(bool, true)
+    cronjobs         = optional(list)
+    optional_steps   = optional(map(object({
+      name = string
+      is_required = optional(bool, true)
+      properties = map(string)
+    })))
+  }))
 }
 
 variable "enable_newrelic" {

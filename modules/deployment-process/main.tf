@@ -4,15 +4,6 @@ locals {
       for channel in var.channels : "${project_key} ${channel.name}" => merge(tomap(channel), { project_name = project_key })
     }
   ]...)
-
-  # To avoid adding the complexity of an object, we format the map with certain attributes that we need to use for the deployment
-  projects_formatted = {
-    for project_key, project_value in var.projects : project_key => merge(project_value, {
-      create_main_step = can(project_value.create_main_step) ? project_value.create_main_step : true # True as default
-      cronjobs = can(project_value.cronjobs) ? project_value.cronjobs : [] # Empty list as default
-      optional_steps = can(project_value.optional_steps) ? project_value.optional_steps : {} # Empty map as default
-    })
-  }
 }
 
 # One env resource only
@@ -306,14 +297,14 @@ EOT
     for_each = each.value.optional_steps
     content {
       condition           = "Success"
-      name                = "${lookup(step.value, "name", "")} - ${each.key}"
+      name                = step.value.name
       package_requirement = "LetOctopusDecide"
       start_trigger       = "StartAfterPrevious"
       target_roles        = var.octopus_environments
 
       run_kubectl_script_action {
-        name           = "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
-        is_required    = true
+        name           = "Optional Step for - ${each.key}"
+        is_required    = step.value.is_required
         worker_pool_id = local.data_worker_pool.id
 
         container {
