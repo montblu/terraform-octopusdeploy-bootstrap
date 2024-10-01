@@ -89,7 +89,6 @@ No outputs.
 | Name | Version |
 |------|---------|
 | <a name="provider_curl2"></a> [curl2](#provider\_curl2) | 1.7.2 |
-| <a name="provider_newrelic"></a> [newrelic](#provider\_newrelic) | 3.27.7 |
 | <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | 0.22.0 |
 
 ## Modules
@@ -119,7 +118,6 @@ No modules.
 | [octopusdeploy_variable.slack_channel](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [octopusdeploy_variable.slack_webhook](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/variable) | resource |
 | [curl2_curl2.slack_get_template_id](https://registry.terraform.io/providers/DanielKoehler/curl2/1.7.2/docs/data-sources/curl2) | data source |
-| [newrelic_entity.this](https://registry.terraform.io/providers/newrelic/newrelic/3.27.7/docs/data-sources/entity) | data source |
 | [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
 | [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
 | [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/feeds) | data source |
@@ -155,6 +153,7 @@ No modules.
 | <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | `{}` | no |
 | <a name="input_projects"></a> [projects](#input\_projects) | Projects list | <pre>map(object({<br>    create_main_step = optional(bool, true)<br>    cronjobs         = optional(list(string), [])<br>    optional_steps   = optional(map(object({<br>      name = string<br>      is_required = optional(bool, true)<br>      properties = map(string)<br>    })), {})<br>  }))</pre> | n/a | yes |
 | <a name="input_registry_sufix"></a> [registry\_sufix](#input\_registry\_sufix) | n/a | `string` | `""` | no |
+| <a name="input_simplify_deployment_name"></a> [simplify\_deployment\_name](#input\_simplify\_deployment\_name) | Removes Organization and Env prefix from deployment name on the deployment process script body | `bool` | `false` | no |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | Slack channel | `string` | `""` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | slack webhook | `string` | `""` | no |
 
