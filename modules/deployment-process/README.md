@@ -148,7 +148,7 @@ No modules.
 | <a name="input_octopus_space_id"></a> [octopus\_space\_id](#input\_octopus\_space\_id) | The Octopus space id | `string` | `""` | no |
 | <a name="input_octopus_worker_tools_version"></a> [octopus\_worker\_tools\_version](#input\_octopus\_worker\_tools\_version) | Octopus worker tools version | `string` | `"6.1-ubuntu.22.04"` | no |
 | <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | `{}` | no |
-| <a name="input_projects"></a> [projects](#input\_projects) | Projects list | <pre>map(object({<br>    create_main_step = optional(bool, true)<br>    cronjobs         = optional(list)<br>    optional_steps   = optional(map(object({<br>      name = string<br>      is_required = optional(bool, true)<br>      properties = map(string)<br>    })))<br>  }))</pre> | n/a | yes |
+| <a name="input_projects"></a> [projects](#input\_projects) | Projects list | <pre>map(object({<br>    create_main_step = optional(bool, true)<br>    cronjobs         = optional(list(string))<br>    optional_steps   = optional(map(object({<br>      name = string<br>      is_required = optional(bool, true)<br>      properties = map(string)<br>    })))<br>  }))</pre> | n/a | yes |
 | <a name="input_registry_sufix"></a> [registry\_sufix](#input\_registry\_sufix) | n/a | `string` | `""` | no |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | Slack channel | `string` | `""` | no |
 | <a name="input_slack_webhook"></a> [slack\_webhook](#input\_slack\_webhook) | slack webhook | `string` | `""` | no |
