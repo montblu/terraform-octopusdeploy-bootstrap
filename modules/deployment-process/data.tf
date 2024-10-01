@@ -44,6 +44,6 @@ data "octopusdeploy_worker_pools" "all" {
 }
 
 data "newrelic_entity" "this" {
-  for_each = var.projects
+  for_each = var.enable_newrelic ? var.projects : {}
   name   = "${local.nr_entity_prefix}${each.key}${local.nr_entity_suffix}"
 }
