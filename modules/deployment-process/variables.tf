@@ -81,7 +81,7 @@ variable "projects" {
   description = "Projects list"
   type        = map(object({
     create_main_step = optional(bool, true)
-    cronjobs         = optional(list)
+    cronjobs         = optional(list(string))
     optional_steps   = optional(map(object({
       name = string
       is_required = optional(bool, true)
