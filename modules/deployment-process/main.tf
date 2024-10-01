@@ -47,7 +47,7 @@ resource "octopusdeploy_project" "all" {
 
 # One env resource only
 resource "octopusdeploy_deployment_process" "all" {
-  for_each = var.create_global_resources ? local.projects_formatted : {}
+  for_each = var.create_global_resources ? var.projects : {}
 
   space_id   = var.octopus_space_id
   project_id = local.data_all_projects[each.key].id
