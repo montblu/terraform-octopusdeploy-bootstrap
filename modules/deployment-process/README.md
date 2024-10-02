@@ -137,7 +137,7 @@ No modules.
 | <a name="input_enable_slack"></a> [enable\_slack](#input\_enable\_slack) | Enable slack API notification | `bool` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | octopus\_environments | `string` | `""` | no |
 | <a name="input_newrelic_apikey"></a> [newrelic\_apikey](#input\_newrelic\_apikey) | NewRelic APIKEY | `string` | `""` | no |
-| <a name="input_newrelic_guid"></a> [newrelic\_guid](#input\_newrelic\_guid) | NewRelic GUID | `string` | `""` | no |
+| <a name="input_newrelic_guid_map"></a> [newrelic\_guid\_map](#input\_newrelic\_guid\_map) | NewRelic GUID map with values per project | `map(string)` | `{}` | no |
 | <a name="input_newrelic_resource_name_prefix"></a> [newrelic\_resource\_name\_prefix](#input\_newrelic\_resource\_name\_prefix) | n/a | `string` | `""` | no |
 | <a name="input_newrelic_resource_name_suffix"></a> [newrelic\_resource\_name\_suffix](#input\_newrelic\_resource\_name\_suffix) | n/a | `string` | `""` | no |
 | <a name="input_newrelic_user"></a> [newrelic\_user](#input\_newrelic\_user) | NewRelic User | `string` | `""` | no |
