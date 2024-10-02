@@ -107,10 +107,10 @@ variable "newrelic_apikey" {
   default     = ""
 }
 
-variable "newrelic_guid" {
-  description = "NewRelic GUID"
-  type        = string
-  default     = ""
+variable "newrelic_guid_map" {
+  description = "NewRelic GUID map with values per project"
+  type        = map(string)
+  default     = {}
 }
 
 variable "octopus_api_key" {
