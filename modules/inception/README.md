@@ -25,7 +25,6 @@ No modules.
 | [octopusdeploy_space.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/space) | resource |
 | [octopusdeploy_user_role.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/user_role) | resource |
 | [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
-| [octopusdeploy_lifecycles.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/lifecycles) | data source |
 | [octopusdeploy_project_groups.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/project_groups) | data source |
 | [octopusdeploy_space.space](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/space) | data source |
 
@@ -76,7 +75,6 @@ No modules.
 | [octopusdeploy_team.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/team) | resource |
 | [octopusdeploy_user_role.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/user_role) | resource |
 | [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
-| [octopusdeploy_lifecycles.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/lifecycles) | data source |
 | [octopusdeploy_project_groups.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/project_groups) | data source |
 | [octopusdeploy_space.space](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/space) | data source |
 

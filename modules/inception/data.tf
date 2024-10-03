@@ -8,13 +8,6 @@ data "octopusdeploy_environments" "all" {
   ]
 }
 
-data "octopusdeploy_lifecycles" "all" {
-  space_id = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
-  take     = 9999 # non-documented defaults to 10
-
-  depends_on = [octopusdeploy_lifecycle.main]
-}
-
 data "octopusdeploy_project_groups" "all" {
   partial_name = var.octopus_project_group_name
   space_id     = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
