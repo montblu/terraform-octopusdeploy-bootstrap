@@ -11,6 +11,7 @@ locals {
 data "octopusdeploy_environments" "all" {
   # We only want the environments created for this space_id so we avoid mixing things up
   space_id = var.octopus_space_id
+  take     = 9999 # non-documented defaults to 10
 }
 
 data "octopusdeploy_environments" "current" {
@@ -28,17 +29,21 @@ data "octopusdeploy_project_groups" "all" {
 data "octopusdeploy_machine_policies" "default" {
   partial_name = "Default"
   space_id     = var.octopus_space_id
+  take         = 1
 }
 
 data "octopusdeploy_feeds" "current" {
   partial_name = var.octopus_github_feed_name
   space_id     = var.octopus_space_id
+  take         = 1
 }
 
 data "octopusdeploy_projects" "all" {
   space_id = var.octopus_space_id
+  take     = 9999 # non-documented defaults to 10
 }
 
 data "octopusdeploy_worker_pools" "all" {
   space_id = var.octopus_space_id
+  take     = 9999 # non-documented defaults to 10
 }
