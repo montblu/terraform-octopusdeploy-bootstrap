@@ -20,10 +20,14 @@ data "octopusdeploy_environments" "current" {
   take     = 1
 }
 
-data "octopusdeploy_project_groups" "all" {
+data "octopusdeploy_project_groups" "default" {
   partial_name = var.octopus_project_group_name
   take         = 1
   space_id     = var.octopus_space_id
+}
+moved {
+  from = data.octopusdeploy_project_groups.all # <= v3.2.1
+  to   = data.octopusdeploy_project_groups.default
 }
 
 data "octopusdeploy_machine_policies" "default" {

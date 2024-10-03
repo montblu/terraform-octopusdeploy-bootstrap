@@ -8,10 +8,14 @@ data "octopusdeploy_environments" "all" {
   ]
 }
 
-data "octopusdeploy_project_groups" "all" {
+data "octopusdeploy_project_groups" "default" {
   partial_name = var.octopus_project_group_name
   space_id     = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   take         = 1
+}
+moved {
+  from = data.octopusdeploy_project_groups.all # <= v3.2.x
+  to   = data.octopusdeploy_project_groups.default
 }
 
 data "octopusdeploy_space" "space" {
