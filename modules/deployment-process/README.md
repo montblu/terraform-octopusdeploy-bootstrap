@@ -81,7 +81,6 @@ No outputs.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_curl2"></a> [curl2](#requirement\_curl2) | 1.7.2 |
-| <a name="requirement_newrelic"></a> [newrelic](#requirement\_newrelic) | 3.27.7 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
 
 ## Providers
