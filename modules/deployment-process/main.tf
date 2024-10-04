@@ -207,7 +207,7 @@ EOT
         action_template {
           # This id can be found on the community template URL on octopus app
           # https://filingramp.octopus.app/app#/Spaces-1/library/steptemplates/community/CommunityActionTemplates-370
-          community_action_template_id = "CommunityActionTemplates-370"
+          community_action_template_id = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].CommunityActionTemplateId
           version                      = 4
           id                           = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
 
