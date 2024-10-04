@@ -5,7 +5,7 @@ output "octopus_space_id" {
 }
 
 output "octopus_project_group_name" {
-  value       = try(data.octopusdeploy_project_groups.all.partial_name, "")
+  value       = try(data.octopusdeploy_project_groups.default.partial_name, "")
   description = "The Octopus project group."
   sensitive   = false
 }

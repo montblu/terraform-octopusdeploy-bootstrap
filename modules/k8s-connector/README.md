@@ -2,7 +2,7 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
 
 ## Providers
@@ -54,7 +54,7 @@ No outputs.
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 0.13.1 |
+| <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
 
 ## Providers

@@ -32,7 +32,7 @@ resource "octopusdeploy_project" "all" {
   is_version_controlled                = false
   lifecycle_id                         = var.octopus_lifecycle_id
   name                                 = each.key
-  project_group_id                     = data.octopusdeploy_project_groups.all.project_groups[0].id
+  project_group_id                     = data.octopusdeploy_project_groups.default.project_groups[0].id
   tenanted_deployment_participation    = "Untenanted"
 
   connectivity_policy {
