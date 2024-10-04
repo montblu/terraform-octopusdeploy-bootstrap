@@ -429,7 +429,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   name     = "Channel"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
-  value    = "DUMMY"
+  value    = var.slack_channel
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
