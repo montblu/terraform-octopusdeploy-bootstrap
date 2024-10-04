@@ -207,7 +207,7 @@ EOT
         action_template {
           # This id can be found on the community template URL on octopus app
           # https://filingramp.octopus.app/app#/Spaces-1/library/steptemplates/community/CommunityActionTemplates-370
-          community_action_template_id = "CommunityActionTemplates-370"
+          community_action_template_id = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].CommunityActionTemplateId
           version                      = 4
           id                           = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
 
@@ -429,7 +429,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   name     = "Channel"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
-  value    = "DUMMY"
+  value    = var.slack_channel
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
