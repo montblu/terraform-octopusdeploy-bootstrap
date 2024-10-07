@@ -250,7 +250,7 @@ generate_post_data()
 }
 EOF
 }
-curl https://api.newrelic.com/graphql \
+curl ${var.newrelic_api_url} \
   -H 'Content-Type: application/json' \
   -H "API-Key: $(apikey)" \
   --data-binary "$(generate_post_data)" \

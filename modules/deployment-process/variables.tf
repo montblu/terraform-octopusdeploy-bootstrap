@@ -79,13 +79,13 @@ variable "slack_channel" {
 
 variable "projects" {
   description = "Projects list"
-  type        = map(object({
+  type = map(object({
     create_main_step = optional(bool, true)
     cronjobs         = optional(list(string), [])
-    optional_steps   = optional(map(object({
-      name = string
+    optional_steps = optional(map(object({
+      name        = string
       is_required = optional(bool, true)
-      properties = map(string)
+      properties  = map(string)
     })), {})
   }))
 }
@@ -127,7 +127,7 @@ variable "octopus_github_feed_name" {
 
 variable "optional_steps" {
   default = {
-    /*  
+    /*
     optional_step1 = {
       name = "step1"
       script_body = "kubectl "
@@ -135,7 +135,7 @@ variable "optional_steps" {
     optional_step2 = {
       name = "step2"
       script_body = "kubectl "
-    }   
+    }
    */
   }
 }
@@ -170,6 +170,11 @@ variable "newrelic_resource_name_suffix" {
 
 variable "simplify_deployment_name" {
   description = "Removes Organization and Env prefix from deployment name on the deployment process script body"
-  type = bool
-  default = false
+  type        = bool
+  default     = false
+}
+
+variable "newrelic_api_url" {
+  type    = string
+  default = "https://api.newrelic.com/graphql"
 }
