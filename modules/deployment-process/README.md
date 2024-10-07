@@ -135,6 +135,7 @@ No modules.
 | <a name="input_enable_newrelic"></a> [enable\_newrelic](#input\_enable\_newrelic) | Enable newrelic API notification | `bool` | n/a | yes |
 | <a name="input_enable_slack"></a> [enable\_slack](#input\_enable\_slack) | Enable slack API notification | `bool` | n/a | yes |
 | <a name="input_environment"></a> [environment](#input\_environment) | octopus\_environments | `string` | `""` | no |
+| <a name="input_newrelic_api_url"></a> [newrelic\_api\_url](#input\_newrelic\_api\_url) | n/a | `string` | `"https://api.newrelic.com/graphql"` | no |
 | <a name="input_newrelic_apikey"></a> [newrelic\_apikey](#input\_newrelic\_apikey) | NewRelic APIKEY | `string` | `""` | no |
 | <a name="input_newrelic_guid_map"></a> [newrelic\_guid\_map](#input\_newrelic\_guid\_map) | NewRelic GUID map with values per project | `map(string)` | `{}` | no |
 | <a name="input_newrelic_resource_name_prefix"></a> [newrelic\_resource\_name\_prefix](#input\_newrelic\_resource\_name\_prefix) | n/a | `string` | `""` | no |
@@ -150,7 +151,7 @@ No modules.
 | <a name="input_octopus_space_id"></a> [octopus\_space\_id](#input\_octopus\_space\_id) | The Octopus space id | `string` | `""` | no |
 | <a name="input_octopus_worker_tools_version"></a> [octopus\_worker\_tools\_version](#input\_octopus\_worker\_tools\_version) | Octopus worker tools version | `string` | `"6.1-ubuntu.22.04"` | no |
 | <a name="input_optional_steps"></a> [optional\_steps](#input\_optional\_steps) | n/a | `map` | `{}` | no |
-| <a name="input_projects"></a> [projects](#input\_projects) | Projects list | <pre>map(object({<br>    create_main_step = optional(bool, true)<br>    cronjobs         = optional(list(string), [])<br>    optional_steps   = optional(map(object({<br>      name = string<br>      is_required = optional(bool, true)<br>      properties = map(string)<br>    })), {})<br>  }))</pre> | n/a | yes |
+| <a name="input_projects"></a> [projects](#input\_projects) | Projects list | <pre>map(object({<br>    create_main_step = optional(bool, true)<br>    cronjobs         = optional(list(string), [])<br>    optional_steps = optional(map(object({<br>      name        = string<br>      is_required = optional(bool, true)<br>      properties  = map(string)<br>    })), {})<br>  }))</pre> | n/a | yes |
 | <a name="input_registry_sufix"></a> [registry\_sufix](#input\_registry\_sufix) | n/a | `string` | `""` | no |
 | <a name="input_simplify_deployment_name"></a> [simplify\_deployment\_name](#input\_simplify\_deployment\_name) | Removes Organization and Env prefix from deployment name on the deployment process script body | `bool` | `false` | no |
 | <a name="input_slack_channel"></a> [slack\_channel](#input\_slack\_channel) | Slack channel | `string` | `""` | no |
