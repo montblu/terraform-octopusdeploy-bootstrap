@@ -431,7 +431,7 @@ resource "octopusdeploy_variable" "slack_channel" {
   owner_id = local.data_all_projects[each.key].id
   value    = var.slack_channel
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+    environments = [data.octopusdeploy_environments.current.environments[0].id]
 
   }
 }
