@@ -192,6 +192,61 @@ EOT
     }
   }
 
+  # Global optional_steps (?)
+  dynamic "step" {
+    for_each = var.optional_steps
+    content {
+      condition           = "Success"
+      name                = "${lookup(step.value, "name", "")} - ${each.key}"
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
+
+      run_kubectl_script_action {
+        name           = "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
+        is_required    = true
+        worker_pool_id = local.data_worker_pool.id
+
+        container {
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+        }
+
+        properties = {
+          run_on_server                                   = true
+          "Octopus.Action.Script.ScriptBody"              = lookup(step.value, "script_body", "")
+          "Octopus.Action.Script.Syntax"                  = "Bash"
+          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+        }
+      }
+    }
+  }
+
+  # Project specific optional_steps (?)
+  dynamic "step" {
+    for_each = each.value.optional_steps
+    content {
+      condition           = "Success"
+      name                = step.value.name
+      package_requirement = "LetOctopusDecide"
+      start_trigger       = "StartAfterPrevious"
+      target_roles        = var.octopus_environments
+
+      run_kubectl_script_action {
+        name           = "Optional Step for - ${each.key}"
+        is_required    = step.value.is_required
+        worker_pool_id = local.data_worker_pool.id
+
+        container {
+          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+        }
+
+        properties = step.value.properties
+      }
+    }
+  }  
+
   # Another workaround for this issue
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
   dynamic "step" {
@@ -258,61 +313,6 @@ curl ${var.newrelic_api_url} \
 EOT
         script_syntax  = "Bash"
         script_source  = "Inline"
-      }
-    }
-  }
-
-  # Global optional_steps (?)
-  dynamic "step" {
-    for_each = var.optional_steps
-    content {
-      condition           = "Success"
-      name                = "${lookup(step.value, "name", "")} - ${each.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
-
-      run_kubectl_script_action {
-        name           = "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
-        is_required    = true
-        worker_pool_id = local.data_worker_pool.id
-
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
-
-        properties = {
-          run_on_server                                   = true
-          "Octopus.Action.Script.ScriptBody"              = lookup(step.value, "script_body", "")
-          "Octopus.Action.Script.Syntax"                  = "Bash"
-          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
-        }
-      }
-    }
-  }
-
-  # Project specific optional_steps (?)
-  dynamic "step" {
-    for_each = each.value.optional_steps
-    content {
-      condition           = "Success"
-      name                = step.value.name
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
-
-      run_kubectl_script_action {
-        name           = "Optional Step for - ${each.key}"
-        is_required    = step.value.is_required
-        worker_pool_id = local.data_worker_pool.id
-
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
-
-        properties = step.value.properties
       }
     }
   }
