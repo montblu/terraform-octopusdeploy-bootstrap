@@ -245,7 +245,7 @@ EOT
         properties = step.value.properties
       }
     }
-  }  
+  }
 
   # Another workaround for this issue
   # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
@@ -385,7 +385,7 @@ data "curl2" "slack_install" {
 
 data "curl2" "slack_get_template_id" {
   http_method = "GET"
-  uri         = "${var.octopus_address}/api/actiontemplates?partialName=Slack%20-%20Detailed%20Notification%20-%20Bash&take=1"
+  uri         = "${var.octopus_address}/api/${var.octopus_space_id}/actiontemplates?skip=0&take=1&partialName=Slack%20-%20Detailed%20Notification%20-%20Bash"
   headers = {
     accept : "application/json"
     X-Octopus-ApiKey : var.octopus_api_key
