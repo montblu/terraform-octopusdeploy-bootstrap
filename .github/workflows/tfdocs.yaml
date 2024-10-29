@@ -3,10 +3,10 @@ on:
   - pull_request
 
 jobs:
- module_matrix:
-   strategy:
-      matrix:
-         module: [inception, k8s-connector, deployment-process]
-   uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
-   with:
-     target: ${{ matrix.module }}
+  module_matrix:
+    strategy:
+       matrix:
+          module: [inception, k8s-connector, deployment-process]
+    uses: montblu/github-actions/.github/workflows/tfdocs.yaml@main
+    with:
+      target: ./modules/${{ matrix.module }}
