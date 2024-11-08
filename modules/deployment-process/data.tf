@@ -3,8 +3,11 @@ locals {
   nr_entity_suffix = var.newrelic_resource_name_suffix != "" ? format("-%s", var.newrelic_resource_name_suffix) : ""
 
   # Provider is not able to search only one pool with the name, so we need this hack to search it ourselves
-  data_worker_pool  = { for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker }["${var.octopus_project_group_name}-workers-Ubuntu"]
-  data_all_projects = { for project in data.octopusdeploy_projects.all.projects : project.name => project }
+  data_worker_pool = { for worker in data.octopusdeploy_worker_pools.all.worker_pools : worker.name => worker }["${var.octopus_project_group_name}-workers-Ubuntu"]
+  data_all_projects = var.create_global_resources ? {
+    for project in octopusdeploy_project.all : project.name => project } : {
+    for project in data.octopusdeploy_projects.all.projects : project.name => project
+  }
 
 }
 
