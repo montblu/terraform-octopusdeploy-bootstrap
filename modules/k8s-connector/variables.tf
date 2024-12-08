@@ -39,6 +39,7 @@ variable "k8s_account_token" {
 variable "k8s_namespace" {
   description = "K8s account token"
   type        = string
+  default     = ""
 }
 
 variable "k8s_cluster_url" {
