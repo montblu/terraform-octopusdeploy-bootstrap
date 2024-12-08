@@ -14,7 +14,7 @@ resource "octopusdeploy_kubernetes_cluster_deployment_target" "k8s" {
   roles               = [data.octopusdeploy_environments.current.environments[0].name]
   cluster_certificate = octopusdeploy_certificate.k8s.id
   cluster_url         = var.k8s_cluster_url
-  namespace           = var.k8s_namespace
+  namespace           = var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
 
   authentication {
     account_id = octopusdeploy_token_account.k8s.id
@@ -51,17 +51,113 @@ resource "octopusdeploy_certificate" "k8s" {
 resource "octopusdeploy_token_account" "k8s" {
   name         = "Token Account-${var.octopus_project_group_name}-${var.octopus_environment}"
   space_id     = var.octopus_space_id
-  token        = var.k8s_account_token == "" ? lookup(kubernetes_secret.k8s_secrets[0].data, "token") : var.k8s_account_token
+  token        = var.k8s_account_token == "" ? lookup(kubernetes_secret_v1.octopus[0].data, "token") : var.k8s_account_token
   environments = [data.octopusdeploy_environments.current.environments[0].id]
 
 }
 # All envs resource
-resource "kubernetes_secret" "k8s_secrets" {
+resource "kubernetes_secret_v1" "octopus" {
   count                          = var.k8s_account_token == "" ? 1 : 0
-  type                           = "service-account-token"
-  wait_for_service_account_token = true
+  metadata {
+    name      = kubernetes_service_account.octopus[0].metadata[0].name
+    namespace = var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
+    annotations = {
+      "kubernetes.io/service-account.name" = kubernetes_service_account.octopus[0].metadata[0].name
+    }
+  }
+  type = "kubernetes.io/service-account-token"
+
+  depends_on = [
+    kubernetes_service_account.octopus
+  ]
+}
+
+resource "kubernetes_service_account" "octopus" {
+  count                          = var.k8s_account_token == "" ? 1 : 0
   metadata {
     name      = "octopus"
-    namespace = "${var.octopus_project_group_name}-${var.octopus_environment}"
+    namespace =  var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
+  }
+}
+
+resource "kubernetes_namespace_v1" "octopus" {
+  count                          = var.k8s_namespace == "" ? 1 : 0
+  metadata {
+    name      =  "${var.octopus_project_group_name}-${var.octopus_environment}"
+  }
+}
+
+resource "kubernetes_role" "octopus" {
+  count                          = var.k8s_account_token == "" ? 1 : 0
+  metadata {
+    name      = "octopus"
+    namespace = var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
+  }
+
+  rule {
+    api_groups = [
+      "",
+      "apps",
+      "extensions",
+    ]
+    resources = [
+      "deployments",
+      "pods",
+      "replicasets",
+    ]
+    verbs = [
+      "exec",
+      "get",
+      "list",
+      "patch",
+      "set",
+      "watch",
+    ]
+  }
+}
+
+# bind cluster role to Octopus
+resource "kubernetes_role_binding" "octopus" {
+  count                          = var.k8s_account_token == "" ? 1 : 0
+  metadata {
+    name      = "octopus"
+    namespace = var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
+  }
+
+  subject {
+    kind      = "ServiceAccount"
+    name      = kubernetes_service_account.octopus[0].metadata[0].name
+    namespace = var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
+  }
+
+  role_ref {
+    api_group = "rbac.authorization.k8s.io"
+    kind      = "Role"
+    name      = kubernetes_role.octopus[0].metadata[0].name
+  }
+
+  depends_on = [
+    kubernetes_service_account.octopus,
+    kubernetes_role.octopus
+  ]
+}
+
+resource "kubernetes_cluster_role" "octopus" {
+  count                          = var.k8s_account_token == "" ? 1 : 0
+  metadata {
+    name = "octopus"
+  }
+
+  rule {
+    api_groups = [
+      ""
+    ]
+    resources = [
+      "namespaces"
+    ]
+    verbs = [
+      "get",
+      "list",
+    ]
   }
 }

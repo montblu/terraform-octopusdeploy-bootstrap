@@ -55,13 +55,14 @@ No outputs.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.31.0 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | n/a |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.31.0 |
 | <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | 0.22.0 |
 
 ## Modules
@@ -72,7 +73,12 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [kubernetes_secret.k8s_secrets](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
+| [kubernetes_cluster_role.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/cluster_role) | resource |
+| [kubernetes_namespace_v1.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/namespace_v1) | resource |
+| [kubernetes_role.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/role) | resource |
+| [kubernetes_role_binding.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/role_binding) | resource |
+| [kubernetes_secret_v1.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/secret_v1) | resource |
+| [kubernetes_service_account.octopus](https://registry.terraform.io/providers/hashicorp/kubernetes/2.31.0/docs/resources/service_account) | resource |
 | [octopusdeploy_certificate.k8s](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/certificate) | resource |
 | [octopusdeploy_dynamic_worker_pool.ubuntu](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/dynamic_worker_pool) | resource |
 | [octopusdeploy_kubernetes_cluster_deployment_target.k8s](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/kubernetes_cluster_deployment_target) | resource |
@@ -93,7 +99,7 @@ No modules.
 | <a name="input_k8s_certificate_password"></a> [k8s\_certificate\_password](#input\_k8s\_certificate\_password) | K8s certificate password | `string` | n/a | yes |
 | <a name="input_k8s_cluster_url"></a> [k8s\_cluster\_url](#input\_k8s\_cluster\_url) | K8s account token | `string` | n/a | yes |
 | <a name="input_k8s_container_image"></a> [k8s\_container\_image](#input\_k8s\_container\_image) | K8s service prefix | `string` | n/a | yes |
-| <a name="input_k8s_namespace"></a> [k8s\_namespace](#input\_k8s\_namespace) | K8s account token | `string` | n/a | yes |
+| <a name="input_k8s_namespace"></a> [k8s\_namespace](#input\_k8s\_namespace) | K8s account token | `string` | `""` | no |
 | <a name="input_octopus_environment"></a> [octopus\_environment](#input\_octopus\_environment) | octopus\_environment | `string` | `""` | no |
 | <a name="input_octopus_github_feed_name"></a> [octopus\_github\_feed\_name](#input\_octopus\_github\_feed\_name) | Octopus Github feed name | `string` | `"Github Container Registry"` | no |
 | <a name="input_octopus_project_group_name"></a> [octopus\_project\_group\_name](#input\_octopus\_project\_group\_name) | Project Group name | `string` | n/a | yes |
