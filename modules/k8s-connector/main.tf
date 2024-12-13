@@ -135,7 +135,7 @@ resource "kubernetes_role_binding" "octopus" {
 }
 
 resource "kubernetes_cluster_role" "octopus" {
-  count                          = var.k8s_account_token == "" ? 1 : 0
+   count       = var.create_global_resources ? 1 : 0
   metadata {
     name = "octopus"
   }
