@@ -79,14 +79,6 @@ resource "kubernetes_service_account" "octopus" {
     namespace =  var.k8s_namespace == "" ? "${var.octopus_project_group_name}-${var.octopus_environment}" : "${var.k8s_namespace}"
   }
 }
-
-resource "kubernetes_namespace_v1" "octopus" {
-  count                          = var.k8s_namespace == "" ? 1 : 0
-  metadata {
-    name      =  "${var.octopus_project_group_name}-${var.octopus_environment}"
-  }
-}
-
 resource "kubernetes_role" "octopus" {
   count                          = var.k8s_account_token == "" ? 1 : 0
   metadata {
