@@ -60,6 +60,7 @@ resource "octopusdeploy_environment" "main" {
   space_id                     = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
+  sort_order                   = fileexists("../configs/settings.yml") ? index(yamldecode(file("../configs/settings.yml")).environments.permanent, var.octopus_environment) : ""
 }
 #One env resource only
 resource "octopusdeploy_lifecycle" "main" {
