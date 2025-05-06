@@ -150,7 +150,7 @@ set -e
 
 ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
 PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-DEPLOYMENT=${var.simplify_deployment_name ? "$PROJECTNAME" : "${var.octopus_organization_prefix}-$ENVIRONMENT-$PROJECTNAME"}
+DEPLOYMENT="$(get_octopusvariable "deployment_name")" 
 RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
 
 
@@ -330,6 +330,23 @@ resource "octopusdeploy_variable" "ecr_url" {
   ]
 }
 
+resource "octopusdeploy_variable" "deployment_name" {
+  for_each = var.projects
+
+  space_id = var.octopus_space_id
+  name     = "deployment_name"
+  type     = "String"
+  owner_id = local.data_all_projects[each.key].id
+  value    = coalesce(each.value.deployment_name, "${var.octopus_organization_prefix}-${var.environment}-${each.key}")
+  scope {
+    environments = [data.octopusdeploy_environments.current.environments[0].id]
+  }
+
+  depends_on = [
+    octopusdeploy_project.all
+  ]
+
+}
 ###############
 # Slack Template Installation
 ###############
