@@ -4,7 +4,7 @@ terraform {
   required_providers {
     octopusdeploy = {
       source  = "OctopusDeployLabs/octopusdeploy"
-      version = "0.42.0"
+      version = ">= 0.42.0"
     }
     curl2 = {
       source  = "DanielKoehler/curl2"
@@ -12,4 +12,3 @@ terraform {
     }
   }
 }
-
