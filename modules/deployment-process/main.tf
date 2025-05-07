@@ -289,7 +289,23 @@ EOT
       }
     }
   }
-
+lifecycle {
+    ignore_changes = [
+      step[0].run_kubectl_script_action,
+      step[0].properties,
+      step[1].run_kubectl_script_action,
+      step[1].properties,
+      step[2].run_kubectl_script_action,
+      step[2].properties,
+      step[3].run_kubectl_script_action,
+      step[3].properties,
+      step[0].run_script_action,
+      step[1].run_script_action,
+      step[2].run_script_action,
+      step[3].run_script_action,
+      step[4].run_script_action
+    ]
+  }
 }
 
 #####
