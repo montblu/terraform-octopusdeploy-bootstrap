@@ -82,6 +82,7 @@ variable "projects" {
   type = map(object({
     create_main_step = optional(bool, true)
     cronjobs         = optional(list(string), [])
+    deployment_name  = optional(string, "")
     optional_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
@@ -166,12 +167,6 @@ variable "newrelic_resource_name_prefix" {
 variable "newrelic_resource_name_suffix" {
   type    = string
   default = ""
-}
-
-variable "simplify_deployment_name" {
-  description = "Removes Organization and Env prefix from deployment name on the deployment process script body"
-  type        = bool
-  default     = false
 }
 
 variable "newrelic_api_url" {
