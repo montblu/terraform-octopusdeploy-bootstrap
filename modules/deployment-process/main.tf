@@ -75,49 +75,17 @@ resource "octopusdeploy_deployment_process" "all" {
           image   = "montblu/workertools:${var.octopus_worker_tools_version}"
         }
 
+        run_on_server = true
+        sort_order    = 1
+        script_body   = local.set_image_script_body
+
         properties = {
-          run_on_server                                   = true
-          "Octopus.Action.Script.ScriptBody"              = <<-EOT
-
-  #!/bin/bash
-
-  set -e
-
-  ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
-  PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-  DEPLOYMENT="$(get_octopusvariable "deployment_name")" 
-  RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
-  DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
-  # Get list of all the containers in the Deployment including init containers
-  IFS=" " read -r -a ALL_CONTAINERS <<< "$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.spec.template.spec.containers[*].name} {.spec.template.spec.initContainers[*].name}")"
-  # Container names selected from the value coming from annotation 'octopus.containers.set' in the deployment
-  OCTOPUS_ANNOTATION=$(kubectl get deployment $DEPLOYMENT -o jsonpath="{.metadata.annotations.octopus\.containers\.set}")
-  CONTAINERS=()
-
-  if [ -z "$OCTOPUS_ANNOTATION" ]
-  then
-      # If the annotation is missing or empty we set the image for all containers
-      SELECTED_CONTAINERS=("$${ALL_CONTAINERS[@]}")
-  else
-      # Otherwise we use the containers from the annotation
-      IFS="," read -a SELECTED_CONTAINERS <<< "$OCTOPUS_ANNOTATION"
-  fi
-
-  # Create an array with container names and image Ex:["container1=image" "container2=image"]
-  for container in "$${SELECTED_CONTAINERS[@]}"
-  do
-      CONTAINERS+=( "$container=$DOCKER_IMAGE" )
-  done
-
-  # Set Image to the containers
-  kubectl set image "deployment/$DEPLOYMENT" $${CONTAINERS[@]}
-
-  # Wait for deployment to became Healthy
-  kubectl rollout status "deployment/$DEPLOYMENT"
-
-  EOT
-          "Octopus.Action.Script.Syntax"                  = "Bash"
-          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
+          "Octopus.Action.Script.Syntax"             = "Bash"
+          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+          "OctopusUseBundledTooling"                 = "False"
         }
       }
     }
@@ -142,24 +110,16 @@ resource "octopusdeploy_deployment_process" "all" {
           image   = "montblu/workertools:${var.octopus_worker_tools_version}"
         }
 
+        run_on_server = true
+        sort_order    = 1
+        script_body   = local.cronjobs_script_body
         properties = {
-          run_on_server                                   = true
-          "Octopus.Action.Script.ScriptBody"              = <<-EOT
-#!/bin/bash
-set -e
-
-ENVIRONMENT="$(get_octopusvariable "Octopus.Environment.Name")"
-PROJECTNAME="$(get_octopusvariable "Octopus.Project.Name")"
-DEPLOYMENT="$(get_octopusvariable "deployment_name")" 
-RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
-
-
-bash -c "kubectl version"
-bash -c "kubectl set image cronjob/${step.key} ${step.key}=$(get_octopusvariable "ecr_url")/$DEPLOYMENT-${each.key}-${var.registry_sufix}:$RELEASENUMBER"
-
-EOT
-          "Octopus.Action.Script.Syntax"                  = "Bash"
-          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
+          "Octopus.Action.Script.Syntax"             = "Bash"
+          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+          "OctopusUseBundledTooling"                 = "False"
         }
       }
     }
@@ -185,11 +145,17 @@ EOT
           image   = "montblu/workertools:${var.octopus_worker_tools_version}"
         }
 
+        run_on_server = true
+        sort_order    = 1
+        script_body   = lookup(step.value, "script_body", "")
+
         properties = {
-          run_on_server                                   = true
-          "Octopus.Action.Script.ScriptBody"              = lookup(step.value, "script_body", "")
-          "Octopus.Action.Script.Syntax"                  = "Bash"
-          "Octopus.Action.KubernetesContainers.Namespace" = "#{Octopus.Action.Kubernetes.Namespace}"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptBody"         = lookup(step.value, "script_body", "")
+          "Octopus.Action.Script.Syntax"             = "Bash"
+          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+          "OctopusUseBundledTooling"                 = "False"
         }
       }
     }
@@ -288,23 +254,6 @@ EOT
         script_source  = "Inline"
       }
     }
-  }
-lifecycle {
-    ignore_changes = [
-      step[0].run_kubectl_script_action,
-      step[0].properties,
-      step[1].run_kubectl_script_action,
-      step[1].properties,
-      step[2].run_kubectl_script_action,
-      step[2].properties,
-      step[3].run_kubectl_script_action,
-      step[3].properties,
-      step[0].run_script_action,
-      step[1].run_script_action,
-      step[2].run_script_action,
-      step[3].run_script_action,
-      step[4].run_script_action
-    ]
   }
 }
 
