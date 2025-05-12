@@ -17,6 +17,7 @@ resource "octopusdeploy_user_role" "developers" {
     "DeploymentDelete",
     "DeploymentView",
     "EnvironmentView",
+    "InterruptionView",
     "FeedView",
     "LifecycleView",
     "MachinePolicyView",
