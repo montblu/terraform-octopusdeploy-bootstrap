@@ -80,7 +80,7 @@ resource "octopusdeploy_deployment_process" "all" {
         script_body   = local.set_image_script_body
 
         properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
           "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
           "Octopus.Action.Script.Syntax"             = "Bash"
@@ -114,7 +114,7 @@ resource "octopusdeploy_deployment_process" "all" {
         sort_order    = 1
         script_body   = local.cronjobs_script_body
         properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
           "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
           "Octopus.Action.Script.Syntax"             = "Bash"
@@ -150,7 +150,7 @@ resource "octopusdeploy_deployment_process" "all" {
         script_body   = lookup(step.value, "script_body", "")
 
         properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles,Octopus.Features.SubstituteInFiles"
+          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
           "Octopus.Action.Script.ScriptBody"         = lookup(step.value, "script_body", "")
           "Octopus.Action.Script.Syntax"             = "Bash"
