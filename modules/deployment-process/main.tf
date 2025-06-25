@@ -82,6 +82,7 @@ resource "octopusdeploy_deployment_process" "all" {
         properties = {
           "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptSource"       = "Inline"
           "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
           "Octopus.Action.Script.Syntax"             = "Bash"
           "Octopus.Action.SubstituteInFiles.Enabled" = "True"
@@ -116,6 +117,7 @@ resource "octopusdeploy_deployment_process" "all" {
         properties = {
           "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptSource"       = "Inline"
           "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
           "Octopus.Action.Script.Syntax"             = "Bash"
           "Octopus.Action.SubstituteInFiles.Enabled" = "True"
@@ -152,6 +154,7 @@ resource "octopusdeploy_deployment_process" "all" {
         properties = {
           "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
           "Octopus.Action.RunOnServer"               = "true"
+          "Octopus.Action.Script.ScriptSource"       = "Inline"
           "Octopus.Action.Script.ScriptBody"         = lookup(step.value, "script_body", "")
           "Octopus.Action.Script.Syntax"             = "Bash"
           "Octopus.Action.SubstituteInFiles.Enabled" = "True"
