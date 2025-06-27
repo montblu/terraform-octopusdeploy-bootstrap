@@ -81,14 +81,14 @@ No outputs.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_curl2"></a> [curl2](#requirement\_curl2) | 1.7.2 |
-| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >= 1.0.1 |
+| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | ~> 1.0.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_curl2"></a> [curl2](#provider\_curl2) | 1.7.2 |
-| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >= 1.0.1 |
+| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | ~> 1.0.1 |
 
 ## Modules
 
