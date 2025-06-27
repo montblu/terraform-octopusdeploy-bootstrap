@@ -258,15 +258,6 @@ EOT
       }
     }
   }
-  /*
-  lifecycle {
-    ignore_changes = [ 
-      step[1].run_script_action[0].sort_order,
-      step[2].run_script_action[0].sort_order,
-      step[1].run_script_action[0].action_template
-    ]
-  }
-  */
 }
 
 #####
