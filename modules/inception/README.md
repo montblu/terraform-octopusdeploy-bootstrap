@@ -51,13 +51,13 @@ No modules.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
-| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 0.22.0 |
+| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >= 0.42.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | 0.22.0 |
+| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >= 0.42.0 |
 
 ## Modules
 
@@ -67,16 +67,16 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [octopusdeploy_docker_container_registry.github](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/docker_container_registry) | resource |
-| [octopusdeploy_environment.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/environment) | resource |
-| [octopusdeploy_lifecycle.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/lifecycle) | resource |
-| [octopusdeploy_project_group.project_group](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/project_group) | resource |
-| [octopusdeploy_space.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/space) | resource |
-| [octopusdeploy_team.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/team) | resource |
-| [octopusdeploy_user_role.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/resources/user_role) | resource |
-| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/environments) | data source |
-| [octopusdeploy_project_groups.default](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/project_groups) | data source |
-| [octopusdeploy_space.space](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/0.22.0/docs/data-sources/space) | data source |
+| [octopusdeploy_docker_container_registry.github](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/docker_container_registry) | resource |
+| [octopusdeploy_environment.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/environment) | resource |
+| [octopusdeploy_lifecycle.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/lifecycle) | resource |
+| [octopusdeploy_project_group.project_group](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/project_group) | resource |
+| [octopusdeploy_space.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/space) | resource |
+| [octopusdeploy_team.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/team) | resource |
+| [octopusdeploy_user_role.developers](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/user_role) | resource |
+| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/environments) | data source |
+| [octopusdeploy_project_groups.default](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/project_groups) | data source |
+| [octopusdeploy_space.space](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/space) | data source |
 
 ## Inputs
 
