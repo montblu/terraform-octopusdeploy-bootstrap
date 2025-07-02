@@ -1,4 +1,4 @@
-### >= v6.0.0
+### Upgrade >= v6.0.0
 
 #### Required to replace provider:
 https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/guides/moving-from-octopus-deploy-labs-nam
