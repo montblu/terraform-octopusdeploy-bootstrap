@@ -81,14 +81,14 @@ No outputs.
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_curl2"></a> [curl2](#requirement\_curl2) | 1.7.2 |
-| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >= 0.42.0 |
+| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | ~> 1.1.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_curl2"></a> [curl2](#provider\_curl2) | 1.7.2 |
-| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >= 0.42.0 |
+| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | ~> 1.1.1 |
 
 ## Modules
 
@@ -98,33 +98,33 @@ No modules.
 
 | Name | Type |
 |------|------|
-| [octopusdeploy_channel.main](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/channel) | resource |
-| [octopusdeploy_deployment_process.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/deployment_process) | resource |
-| [octopusdeploy_project.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/project) | resource |
-| [octopusdeploy_variable.DeploymentInfoText](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeErrorMessageOnFailure](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeFieldEnvironment](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeFieldMachine](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeFieldProject](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeFieldRelease](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeFieldUsername](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.IncludeLinkOnFailure](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.deployment_name](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.ecr_url](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.newrelic_apikey](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.newrelic_guid](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.newrelic_user](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.octopus_url](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.slack_channel](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
-| [octopusdeploy_variable.slack_webhook](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_channel.main](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/channel) | resource |
+| [octopusdeploy_deployment_process.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/deployment_process) | resource |
+| [octopusdeploy_project.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/project) | resource |
+| [octopusdeploy_variable.DeploymentInfoText](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeErrorMessageOnFailure](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeFieldEnvironment](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeFieldMachine](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeFieldProject](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeFieldRelease](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeFieldUsername](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.IncludeLinkOnFailure](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.deployment_name](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.ecr_url](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.newrelic_apikey](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.newrelic_guid](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.newrelic_user](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.octopus_url](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.slack_channel](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
+| [octopusdeploy_variable.slack_webhook](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
 | [curl2_curl2.slack_get_template_id](https://registry.terraform.io/providers/DanielKoehler/curl2/1.7.2/docs/data-sources/curl2) | data source |
-| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/environments) | data source |
-| [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/environments) | data source |
-| [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/feeds) | data source |
-| [octopusdeploy_machine_policies.default](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/machine_policies) | data source |
-| [octopusdeploy_project_groups.default](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/project_groups) | data source |
-| [octopusdeploy_projects.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/projects) | data source |
-| [octopusdeploy_worker_pools.all](https://registry.terraform.io/providers/OctopusDeployLabs/octopusdeploy/latest/docs/data-sources/worker_pools) | data source |
+| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
+| [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
+| [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/feeds) | data source |
+| [octopusdeploy_machine_policies.default](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/machine_policies) | data source |
+| [octopusdeploy_project_groups.default](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/project_groups) | data source |
+| [octopusdeploy_projects.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/projects) | data source |
+| [octopusdeploy_worker_pools.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/worker_pools) | data source |
 
 ## Inputs
 
