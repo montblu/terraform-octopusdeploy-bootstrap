@@ -55,14 +55,14 @@ No outputs.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
-| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | 1.1.1 |
+| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | ~> 1.1.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | n/a |
-| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | 1.1.1 |
+| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | ~> 1.1.1 |
 
 ## Modules
 
@@ -73,15 +73,15 @@ No modules.
 | Name | Type |
 |------|------|
 | [kubernetes_secret.k8s_secrets](https://registry.terraform.io/providers/hashicorp/kubernetes/latest/docs/resources/secret) | resource |
-| [octopusdeploy_certificate.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/resources/certificate) | resource |
-| [octopusdeploy_dynamic_worker_pool.ubuntu](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/resources/dynamic_worker_pool) | resource |
-| [octopusdeploy_kubernetes_cluster_deployment_target.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/resources/kubernetes_cluster_deployment_target) | resource |
-| [octopusdeploy_token_account.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/resources/token_account) | resource |
-| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/data-sources/environments) | data source |
-| [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/data-sources/environments) | data source |
-| [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/data-sources/feeds) | data source |
-| [octopusdeploy_machine_policies.default](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/data-sources/machine_policies) | data source |
-| [octopusdeploy_worker_pools.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/1.1.1/docs/data-sources/worker_pools) | data source |
+| [octopusdeploy_certificate.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/certificate) | resource |
+| [octopusdeploy_dynamic_worker_pool.ubuntu](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/dynamic_worker_pool) | resource |
+| [octopusdeploy_kubernetes_cluster_deployment_target.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/kubernetes_cluster_deployment_target) | resource |
+| [octopusdeploy_token_account.k8s](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/token_account) | resource |
+| [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
+| [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
+| [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/feeds) | data source |
+| [octopusdeploy_machine_policies.default](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/machine_policies) | data source |
+| [octopusdeploy_worker_pools.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/worker_pools) | data source |
 
 ## Inputs
 
