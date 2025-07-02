@@ -61,6 +61,7 @@ resource "octopusdeploy_environment" "main" {
   space_id                     = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
   allow_dynamic_infrastructure = false
   use_guided_failure           = false
+  sort_order                   = var.env_sort_order != null ? index(var.env_sort_order, var.octopus_environment) : null
 }
 #One env resource only
 resource "octopusdeploy_lifecycle" "main" {
