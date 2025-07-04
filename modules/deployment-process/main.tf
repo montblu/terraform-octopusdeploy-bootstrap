@@ -16,7 +16,7 @@ resource "octopusdeploy_channel" "main" {
   lifecycle_id = each.value.lifecycle_id == "" ? var.octopus_lifecycle_id : each.value.lifecycle_id
   is_default   = each.value.is_default
 
- depends_on = [ octopusdeploy_process.all ]
+  depends_on = [octopusdeploy_process.all]
 }
 
 
@@ -47,16 +47,16 @@ resource "octopusdeploy_project" "all" {
 }
 #### NEW CODE BELOW ####
 resource "octopusdeploy_process" "all" {
-  for_each    = var.create_global_resources ? var.projects : {}
+  for_each = var.create_global_resources ? var.projects : {}
 
-  space_id    = var.octopus_space_id
-  project_id  = local.data_all_projects[each.key].id
+  space_id   = var.octopus_space_id
+  project_id = local.data_all_projects[each.key].id
 }
 
 resource "octopusdeploy_process_steps_order" "steps_order" {
-  for_each    = var.create_global_resources ? var.projects : {}
-  space_id    = var.octopus_space_id
-  process_id  = octopusdeploy_process.all[each.key].id
+  for_each   = var.create_global_resources ? var.projects : {}
+  space_id   = var.octopus_space_id
+  process_id = octopusdeploy_process.all[each.key].id
   steps = [
     octopusdeploy_process_step.set_image[each.key].id,
     octopusdeploy_process_templated_step.slack_notification_step[each.key].id,
@@ -66,131 +66,131 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
 resource "octopusdeploy_process_step" "set_image" {
   for_each = var.create_global_resources ? var.projects : {}
 
-  process_id  = octopusdeploy_process.all[each.key].id
-  space_id    = var.octopus_space_id
-  name        = "Set image - ${each.key}"
-  condition   = "Success"
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "Set image - ${each.key}"
+  condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
-  
-  type = "Octopus.Script"
-  is_required = true
+
+  type           = "Octopus.Script"
+  is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
   }
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
-  
+
   container = {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
 }
 
 resource "octopusdeploy_process_step" "optional_step" {
   for_each = var.create_global_resources ? var.optional_steps : {}
 
-  process_id  = octopusdeploy_process.all[each.key].id
-  space_id    = var.octopus_space_id
-  name        = "optional step - ${each.key}"
-  condition   = "Success"
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "optional step - ${each.key}"
+  condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
-  
-  type = "Octopus.Script"
-  is_required = true
+
+  type           = "Octopus.Script"
+  is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.ScriptBody"         = lookup(each.value, "script_body", "")
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = lookup(each.value, "script_body", "")
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
   }
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-   }
-  
+  }
+
   container = {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
 }
 
 resource "octopusdeploy_process_step" "project_optional_step" {
   for_each = var.create_global_resources ? var.optional_steps : {}
 
-  process_id  = octopusdeploy_process.all[each.key].id
-  space_id    = var.octopus_space_id
-  name        = "optional step - ${each.key}"
-  condition   = "Success"
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "optional step - ${each.key}"
+  condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
-  
-  
-  type = "Octopus.Script"
-  is_required = each.value.is_required
+
+
+  type           = "Octopus.Script"
+  is_required    = each.value.is_required
   worker_pool_id = local.data_worker_pool.id
 
   properties = each.value.properties
   container = {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
 }
 
 resource "octopusdeploy_process_templated_step" "slack_notification_step" {
-  for_each =  var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
-  process_id  = octopusdeploy_process.all[each.key].id
-  space_id    = var.octopus_space_id
-  name = "Slack Notification Step - ${each.key}"
-  start_trigger       = "StartAfterPrevious"
-  template_id = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
+  for_each         = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+  process_id       = octopusdeploy_process.all[each.key].id
+  space_id         = var.octopus_space_id
+  name             = "Slack Notification Step - ${each.key}"
+  start_trigger    = "StartAfterPrevious"
+  template_id      = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
   template_version = 4
-  
+
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
-  
+
   execution_properties = {
-    "Octopus.Action.RunOnServer" = "True",
-    "My.Custom.Property" = "Something",
-    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.RunOnServer"       = "True",
+    "My.Custom.Property"               = "Something",
+    "Octopus.Action.Script.Syntax"     = "Bash"
     "Octopus.Action.Script.ScriptBody" = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
   }
 }
 
 resource "octopusdeploy_process_step" "newrelic_step" {
-  for_each =  var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+  for_each = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
 
-  process_id  = octopusdeploy_process.all[each.key].id  
-  space_id    = var.octopus_space_id
-  name        = "NewRelic - ${each.key}"
-  condition   = "Success"
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "NewRelic - ${each.key}"
+  condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
-  
-  type = "Octopus.Script"
-  is_required = true
+
+  type           = "Octopus.Script"
+  is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
-          "Octopus.Action.Script.ScriptBody"         = <<-EOT
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+    "Octopus.Action.Script.ScriptBody"         = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
 RELEASE="$(get_octopusvariable "Octopus.Release.Number")"
 NOTES="$(get_octopusvariable "Octopus.Release.Notes")"
@@ -220,11 +220,11 @@ EOT
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
-  
+
   container = {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
 }
 ##### OLD CODE BELOW ######
 # One env resource only
