@@ -57,11 +57,14 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
   for_each   = var.create_global_resources ? var.projects : {}
   space_id   = var.octopus_space_id
   process_id = octopusdeploy_process.all[each.key].id
-  steps = [
+  steps = compact([
     octopusdeploy_process_step.set_image[each.key].id,
-    octopusdeploy_process_templated_step.slack_notification_step[each.key].id,
-    octopusdeploy_process_step.newrelic_step[each.key].id,
-  ]
+    contains(keys(octopusdeploy_process_step.cronjobs), each.key) ? octopusdeploy_process_step.cronjobs[each.key].id : null,
+    contains(keys(octopusdeploy_process_step.optional_step), each.key) ? octopusdeploy_process_step.optional_step[each.key].id : null,
+    contains(keys(octopusdeploy_process_step.global_optional_step), each.key) ? octopusdeploy_process_step.global_optional_step[each.key].id : null,
+    contains(keys(octopusdeploy_process_templated_step.slack_notification_step), each.key) ? octopusdeploy_process_templated_step.slack_notification_step[each.key].id : null,
+    contains(keys(octopusdeploy_process_step.newrelic_step), each.key) ? octopusdeploy_process_step.newrelic_step[each.key].id : null,
+  ])
 }
 resource "octopusdeploy_process_step" "set_image" {
   for_each = var.create_global_resources ? var.projects : {}
@@ -81,6 +84,51 @@ resource "octopusdeploy_process_step" "set_image" {
     "Octopus.Action.RunOnServer"               = "true"
     "Octopus.Action.Script.ScriptSource"       = "Inline"
     "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
+  }
+
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
+
+resource "octopusdeploy_process_step" "cronjobs" {
+  for_each = {
+    for pair in flatten([
+      for project_key, project in var.projects : [
+        for id, cronjob in project.cronjobs : {
+          key        = "${project_key}.${id}"
+          project_key = project_key
+          cronjob     = cronjob
+        }
+      ]
+    ]) : pair.key => {
+      project_key = pair.project_key
+      cronjob     = pair.cronjob
+    }
+  }
+
+  process_id          = octopusdeploy_process.all[each.value.project_key].id
+  space_id            = var.octopus_space_id
+  name                = "Set cron image - ${each.value.project_key} - ${each.value.cronjob}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
+
+  type           = "Octopus.Script"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
     "Octopus.Action.Script.Syntax"             = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
     "OctopusUseBundledTooling"                 = "False"
@@ -127,22 +175,22 @@ resource "octopusdeploy_process_step" "optional_step" {
   }
 }
 
-resource "octopusdeploy_process_step" "project_optional_step" {
-  for_each = var.create_global_resources ? var.optional_steps : {}
+resource "octopusdeploy_process_step" "global_optional_step" {
+  for_each = var.create_global_resources && length(var.optional_steps) > 0 ? var.projects : {}
 
   process_id          = octopusdeploy_process.all[each.key].id
   space_id            = var.octopus_space_id
-  name                = "optional step - ${each.key}"
+  name                = "global project optional step - ${each.key}"
   condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
 
   type           = "Octopus.Script"
-  is_required    = each.value.is_required
+  is_required    = lookup(var.optional_steps, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
-  properties = each.value.properties
+  properties = lookup(var.optional_steps, "properties", {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
