@@ -45,7 +45,7 @@ resource "octopusdeploy_project" "all" {
   depends_on = [
   ]
 }
-#### NEW CODE BELOW ####
+
 resource "octopusdeploy_process" "all" {
   for_each = var.create_global_resources ? var.projects : {}
 
