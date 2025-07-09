@@ -37,6 +37,6 @@ kubectl set image "deployment/$DEPLOYMENT" $${CONTAINERS[@]}
 kubectl rollout status "deployment/$DEPLOYMENT"
 EOT
 
-cronjobs_script_body = ""
+  cronjobs_script_body = ""
 }
 

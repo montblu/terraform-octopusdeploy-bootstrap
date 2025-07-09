@@ -103,12 +103,12 @@ resource "octopusdeploy_process_step" "cronjobs" {
     for pair in flatten([
       for project_key, project in var.projects : [
         for id, cronjob in project.cronjobs : {
-          key        = "${project_key}.${id}"
+          key         = "${project_key}.${id}"
           project_key = project_key
           cronjob     = cronjob
         }
       ]
-    ]) : pair.key => {
+      ]) : pair.key => {
       project_key = pair.project_key
       cronjob     = pair.cronjob
     }
