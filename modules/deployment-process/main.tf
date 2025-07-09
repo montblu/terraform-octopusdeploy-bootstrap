@@ -58,12 +58,12 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
   space_id   = var.octopus_space_id
   process_id = octopusdeploy_process.all[each.key].id
   steps = compact([
-    octopusdeploy_process_step.set_image[each.key].id,
-    contains(keys(octopusdeploy_process_step.cronjobs), each.key) ? octopusdeploy_process_step.cronjobs[each.key].id : null,
-    contains(keys(octopusdeploy_process_step.optional_step), each.key) ? octopusdeploy_process_step.optional_step[each.key].id : null,
-    contains(keys(octopusdeploy_process_step.global_optional_step), each.key) ? octopusdeploy_process_step.global_optional_step[each.key].id : null,
-    contains(keys(octopusdeploy_process_templated_step.slack_notification_step), each.key) ? octopusdeploy_process_templated_step.slack_notification_step[each.key].id : null,
-    contains(keys(octopusdeploy_process_step.newrelic_step), each.key) ? octopusdeploy_process_step.newrelic_step[each.key].id : null,
+    try(octopusdeploy_process_step.set_image[each.key].id, null),
+    try(octopusdeploy_process_step.cronjobs[each.key].id, null),
+    try(octopusdeploy_process_step.optional_step[each.key].id, null),
+    try(octopusdeploy_process_step.global_optional_step[each.key].id, null),
+    try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
+    try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
   ])
 }
 resource "octopusdeploy_process_step" "set_image" {
