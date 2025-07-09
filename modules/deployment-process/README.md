@@ -27,7 +27,14 @@ No modules.
 | Name | Type |
 |------|------|
 | [octopusdeploy_channel.main](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/channel) | resource |
-| [octopusdeploy_deployment_process.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/deployment_process) | resource |
+| [octopusdeploy_process.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process) | resource |
+| [octopusdeploy_process_step.cronjobs](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.global_optional_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.newrelic_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.optional_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.set_image](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_steps_order.steps_order](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_steps_order) | resource |
+| [octopusdeploy_process_templated_step.slack_notification_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_templated_step) | resource |
 | [octopusdeploy_project.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/project) | resource |
 | [octopusdeploy_variable.DeploymentInfoText](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
 | [octopusdeploy_variable.IncludeErrorMessageOnFailure](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
