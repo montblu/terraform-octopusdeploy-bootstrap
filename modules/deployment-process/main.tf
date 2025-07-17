@@ -58,15 +58,15 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
   space_id   = var.octopus_space_id
   process_id = octopusdeploy_process.all[each.key].id
   steps = compact([
-    try(octopusdeploy_process_step.set_image[each.key].id, null),
-    try(octopusdeploy_process_step.cronjobs[each.key].id, null),
+    try(octopusdeploy_process_step.set_image_step[each.key].id, null),
+    try(octopusdeploy_process_step.cronjobs_step[each.key].id, null),
     try(octopusdeploy_process_step.optional_step[each.key].id, null),
     try(octopusdeploy_process_step.global_optional_step[each.key].id, null),
     try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
     try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
   ])
 }
-resource "octopusdeploy_process_step" "set_image" {
+resource "octopusdeploy_process_step" "set_image_step" {
   for_each = var.create_global_resources ? var.projects : {}
 
   process_id          = octopusdeploy_process.all[each.key].id
@@ -76,7 +76,7 @@ resource "octopusdeploy_process_step" "set_image" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
-  type           = "Octopus.Script"
+  type           = "Octopus.KubernetesRunScript"
   is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
@@ -98,7 +98,7 @@ resource "octopusdeploy_process_step" "set_image" {
   }
 }
 
-resource "octopusdeploy_process_step" "cronjobs" {
+resource "octopusdeploy_process_step" "cronjobs_step" {
   for_each = {
     for pair in flatten([
       for project_key, project in var.projects : [
@@ -121,7 +121,7 @@ resource "octopusdeploy_process_step" "cronjobs" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
-  type           = "Octopus.Script"
+  type           = "Octopus.KubernetesRunScript"
   is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
@@ -153,7 +153,7 @@ resource "octopusdeploy_process_step" "optional_step" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
-  type           = "Octopus.Script"
+  type           = "Octopus.KubernetesRunScript"
   is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
@@ -186,7 +186,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   start_trigger       = "StartAfterPrevious"
 
 
-  type           = "Octopus.Script"
+  type           = "Octopus.KubernetesRunScript"
   is_required    = lookup(var.optional_steps, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
@@ -199,6 +199,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
 
 resource "octopusdeploy_process_templated_step" "slack_notification_step" {
   for_each         = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+  condition        = "Always"
   process_id       = octopusdeploy_process.all[each.key].id
   space_id         = var.octopus_space_id
   name             = "Slack Notification Step - ${each.key}"
@@ -207,13 +208,14 @@ resource "octopusdeploy_process_templated_step" "slack_notification_step" {
   template_version = 4
 
   properties = {
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
+    "Octopus.Action.RunOnServer"       = "False"
+    "Octopus.Action.TargetRoles"       = join(",", var.octopus_environments)
+    "Octopus.Action.Script.Syntax"     = "Bash"
   }
 
   execution_properties = {
-    "Octopus.Action.RunOnServer"       = "True",
-    "My.Custom.Property"               = "Something",
-    "Octopus.Action.Script.Syntax"     = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "Octopus.Action.EnabledFeatures"   = "Octopus.Features.SubstituteInFiles"
     "Octopus.Action.Script.ScriptBody" = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
   }
 }
