@@ -209,14 +209,15 @@ resource "octopusdeploy_process_templated_step" "slack_notification_step" {
 
   properties = {
     "Octopus.Action.RunOnServer"       = "False"
+    "Octopus.Action.Script.ScriptSource" = "Inline"
     "Octopus.Action.TargetRoles"       = join(",", var.octopus_environments)
-    "Octopus.Action.Script.Syntax"     = "Bash"
+    "Octopus.Action.Script.ScriptBody" = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
+
   }
 
   execution_properties = {
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
     "Octopus.Action.EnabledFeatures"   = "Octopus.Features.SubstituteInFiles"
-    "Octopus.Action.Script.ScriptBody" = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
   }
 }
 
@@ -239,7 +240,6 @@ resource "octopusdeploy_process_step" "newrelic_step" {
     "Octopus.Action.Script.ScriptSource"       = "Inline"
     "Octopus.Action.Script.Syntax"             = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-    "OctopusUseBundledTooling"                 = "False"
     "Octopus.Action.Script.ScriptBody"         = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
 RELEASE="$(get_octopusvariable "Octopus.Release.Number")"
