@@ -99,7 +99,7 @@ resource "octopusdeploy_process_step" "set_image_step" {
 }
 
 resource "octopusdeploy_process_step" "cronjobs_step" {
-  for_each = {
+  for_each = var.create_global_resources ?{
     for pair in flatten([
       for project_key, project in var.projects : [
         for id, cronjob in project.cronjobs : {
@@ -112,7 +112,7 @@ resource "octopusdeploy_process_step" "cronjobs_step" {
       project_key = pair.project_key
       cronjob     = pair.cronjob
     }
-  }
+  } : {}
 
   process_id          = octopusdeploy_process.all[each.value.project_key].id
   space_id            = var.octopus_space_id
@@ -240,6 +240,7 @@ resource "octopusdeploy_process_step" "newrelic_step" {
     "Octopus.Action.Script.ScriptSource"       = "Inline"
     "Octopus.Action.Script.Syntax"             = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
     "Octopus.Action.Script.ScriptBody"         = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
 RELEASE="$(get_octopusvariable "Octopus.Release.Number")"
@@ -295,6 +296,10 @@ resource "octopusdeploy_variable" "ecr_url" {
   depends_on = [
     octopusdeploy_project.all
   ]
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "deployment_name" {
@@ -313,7 +318,11 @@ resource "octopusdeploy_variable" "deployment_name" {
     octopusdeploy_project.all
   ]
 
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
+
 ###############
 # Slack Template Installation
 ###############
@@ -365,7 +374,11 @@ resource "octopusdeploy_variable" "slack_webhook" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-}
+ lifecycle {
+    ignore_changes = [scope]
+  }
+ }
+
 
 resource "octopusdeploy_variable" "octopus_url" {
   for_each = var.enable_slack ? var.projects : {}
@@ -377,6 +390,10 @@ resource "octopusdeploy_variable" "octopus_url" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -391,6 +408,10 @@ resource "octopusdeploy_variable" "slack_channel" {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "DeploymentInfoText" {
@@ -403,6 +424,10 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -417,7 +442,12 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
+
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
   for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
@@ -428,6 +458,10 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -442,6 +476,10 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
@@ -454,6 +492,10 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -468,6 +510,10 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
@@ -481,6 +527,10 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
@@ -493,6 +543,10 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -513,6 +567,10 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "newrelic_guid" {
@@ -525,8 +583,11 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-}
 
+  lifecycle {
+    ignore_changes = [scope]
+  }
+}
 
 resource "octopusdeploy_variable" "newrelic_user" {
   for_each = var.enable_newrelic ? var.projects : {}
@@ -537,5 +598,9 @@ resource "octopusdeploy_variable" "newrelic_user" {
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
