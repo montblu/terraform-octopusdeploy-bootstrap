@@ -351,7 +351,6 @@ data "curl2" "slack_get_template_id" {
   }
 }
 
-
 #####
 # Slack Notification Variables
 #####
@@ -367,7 +366,6 @@ resource "octopusdeploy_variable" "slack_webhook" {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 }
-
 
 resource "octopusdeploy_variable" "octopus_url" {
   for_each = var.enable_slack ? var.projects : {}
@@ -503,7 +501,6 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 ##########
 # New Relic
 ##########
-
 resource "octopusdeploy_variable" "newrelic_apikey" {
   for_each        = var.enable_newrelic ? var.projects : {}
   space_id        = var.octopus_space_id
