@@ -99,7 +99,7 @@ resource "octopusdeploy_process_step" "set_image_step" {
 }
 
 resource "octopusdeploy_process_step" "cronjobs_step" {
-  for_each = var.create_global_resources ?{
+  for_each = var.create_global_resources ? {
     for pair in flatten([
       for project_key, project in var.projects : [
         for id, cronjob in project.cronjobs : {
@@ -208,16 +208,16 @@ resource "octopusdeploy_process_templated_step" "slack_notification_step" {
   template_version = 4
 
   properties = {
-    "Octopus.Action.RunOnServer"       = "False"
+    "Octopus.Action.RunOnServer"         = "False"
     "Octopus.Action.Script.ScriptSource" = "Inline"
-    "Octopus.Action.TargetRoles"       = join(",", var.octopus_environments)
-    "Octopus.Action.Script.ScriptBody" = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
+    "Octopus.Action.TargetRoles"         = join(",", var.octopus_environments)
+    "Octopus.Action.Script.ScriptBody"   = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
 
   }
 
   execution_properties = {
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-    "Octopus.Action.EnabledFeatures"   = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
   }
 }
 
@@ -296,10 +296,6 @@ resource "octopusdeploy_variable" "ecr_url" {
   depends_on = [
     octopusdeploy_project.all
   ]
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "deployment_name" {
@@ -317,10 +313,6 @@ resource "octopusdeploy_variable" "deployment_name" {
   depends_on = [
     octopusdeploy_project.all
   ]
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 ###############
@@ -374,10 +366,7 @@ resource "octopusdeploy_variable" "slack_webhook" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
- lifecycle {
-    ignore_changes = [scope]
-  }
- }
+}
 
 
 resource "octopusdeploy_variable" "octopus_url" {
@@ -390,10 +379,6 @@ resource "octopusdeploy_variable" "octopus_url" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -408,10 +393,6 @@ resource "octopusdeploy_variable" "slack_channel" {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "DeploymentInfoText" {
@@ -424,10 +405,6 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -442,10 +419,6 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
@@ -458,10 +431,6 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -476,10 +445,6 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
@@ -492,10 +457,6 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -510,10 +471,6 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
@@ -527,10 +484,6 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
@@ -543,10 +496,6 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -567,10 +516,6 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
     environments = data.octopusdeploy_environments.all.environments[*].id
 
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "newrelic_guid" {
@@ -583,10 +528,6 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "newrelic_user" {
@@ -598,9 +539,5 @@ resource "octopusdeploy_variable" "newrelic_user" {
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
