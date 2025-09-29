@@ -1,7 +1,20 @@
-### Upgrade >= v6.0.0
+## Breaking changes
 
-#### Required to replace provider:
+### Upgrading to v7.x
+
+> [This migration removes the old deployment process and replaces it with the process resource, this is non-destructive as long as you complete the migration in one go.](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/guides/migration-guide-v1.0.0#how-to-migrate)
+
+Using this `deployment-process` module makes the migration easier.
+Thus the process summary is as follows:
+
+wip
+
+### Upgrading to v6.x
+
+Requires replacing the provider. Check the official documentation:
 https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/guides/moving-from-octopus-deploy-labs-nam
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
