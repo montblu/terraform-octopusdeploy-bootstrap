@@ -1,4 +1,7 @@
 #!/usr/bin/env python3
+# This is a script for helping migrating this terraform module.
+# This script DOES NOT perform any changes!
+
 import json
 import re
 import subprocess
@@ -13,6 +16,7 @@ __tb_site = "k8s"
 __tb_prefix = f"terrabutler tf -site {__tb_site}"
 __tb_site_dir = f"site_{__tb_site}"
 ################################################################################
+
 
 def get_tfstate():
     p = subprocess.run(
@@ -95,7 +99,7 @@ def build_new_resources_dict():
             "instances": [],
         },
     }
-    for name in ["set_image", "cronjob", "newrelic", "optional", "global_optional"]:
+    for name in ["set_image", "cronjobs", "newrelic", "optional", "global_optional"]:
         new_tf_resources[f"step-{name}"] = {
             "module": __tf_module_resource,
             "mode": "managed",
@@ -156,7 +160,7 @@ def rebuild_tf_resources(legacy_process_resource):
                 )
             elif step["name"].startswith("Set image for "):
                 proj = step["name"].split("Set image for ")[1]
-                new_tf_resources["step-cronjob"]["instances"].append(
+                new_tf_resources["step-cronjobs"]["instances"].append(
                     new_step_resource(key, f"{p_id}:{step['id']}", p_id, space_id)
                 )
             elif step["name"].startswith("New Relic Deployment for "):
