@@ -1,7 +1,43 @@
-### Upgrade >= v6.0.0
+## Breaking changes
 
-#### Required to replace provider:
+### Upgrading to v7.x
+
+> [This migration removes the old deployment process and replaces it with the process resource, this is non-destructive as long as you complete the migration in one go.](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/guides/migration-guide-v1.0.0#how-to-migrate)
+
+Using this `deployment-process` module makes the migration easier (Only changes steps' names).
+Thus the process summary is as follows:
+
+- ensure running `terrabutler tf -site X plan` with `v6.x` produces no changes
+- modify the module version to `v7.x` and run `terrabutler tf -site X init -upgrade` (**DO NOT APPLY YET**)
+- remove legacy resources from tfstate \*
+- import new resources to tfstate \*
+- `terrabutler tf -site X apply` (with the new module version)
+- (optional) Rollback if not sure (the helper scripts gives you the command)
+
+\* The process for listing the state resources to remove and import,
+you can execute [this script](../utils/v6-to-v7-helper.py) (from where you run `terrabutler`),
+then follow its instructions (**verify if the script's internal variables apply to your tf code first**):
+
+```sh
+$ ./site_k8s/.terraform/modules/octopus_deployment_process/modules/deployment-process/utils/v6-to-v7-helper.py
+
+DEBUG: calling terrabutler tf -site k8s state pull
+
+# To remove legacy resources from tfstate, execute:
+terrabutler tf -site k8s state rm 'module.octopus_deployment_process.octopusdeploy_deployment_process.all["xxx1"]' 'module.octopus_deployment_process.octopusdeploy_deployment_process.all["xxx2"]' 'module.octopus_deployment_process.octopusdeploy_deployment_process.all["xxx3"]' ...
+
+DEBUG: wrote imports to: site_k8s/octopus_imports.tf
+
+terrabutler tf -site k8s apply # Expected changes to steps' names ONLY
+# terrabutler tf -site k8s state push .ignore.tfstate.rollback.json # ROLLBACK
+```
+
+### Upgrading to v6.x
+
+Requires replacing the provider. Check the official documentation:
 https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/guides/moving-from-octopus-deploy-labs-nam
+
+
 <!-- BEGIN_TF_DOCS -->
 ## Requirements
 
@@ -27,7 +63,14 @@ No modules.
 | Name | Type |
 |------|------|
 | [octopusdeploy_channel.main](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/channel) | resource |
-| [octopusdeploy_deployment_process.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/deployment_process) | resource |
+| [octopusdeploy_process.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process) | resource |
+| [octopusdeploy_process_step.cronjobs_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.global_optional_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.newrelic_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.optional_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_step.set_image_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_step) | resource |
+| [octopusdeploy_process_steps_order.steps_order](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_steps_order) | resource |
+| [octopusdeploy_process_templated_step.slack_notification_step](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/process_templated_step) | resource |
 | [octopusdeploy_project.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/project) | resource |
 | [octopusdeploy_variable.DeploymentInfoText](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
 | [octopusdeploy_variable.IncludeErrorMessageOnFailure](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |

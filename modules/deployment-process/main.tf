@@ -16,8 +16,9 @@ resource "octopusdeploy_channel" "main" {
   lifecycle_id = each.value.lifecycle_id == "" ? var.octopus_lifecycle_id : each.value.lifecycle_id
   is_default   = each.value.is_default
 
-  depends_on = [octopusdeploy_deployment_process.all]
+  depends_on = [octopusdeploy_process.all]
 }
+
 
 # One env resource only
 resource "octopusdeploy_project" "all" {
@@ -45,189 +46,202 @@ resource "octopusdeploy_project" "all" {
   ]
 }
 
-# One env resource only
-resource "octopusdeploy_deployment_process" "all" {
+resource "octopusdeploy_process" "all" {
   for_each = var.create_global_resources ? var.projects : {}
 
   space_id   = var.octopus_space_id
   project_id = local.data_all_projects[each.key].id
-  depends_on = [octopusdeploy_project.all]
+}
 
-  # to update steps, and actions, we need to delete ALL STEPS first (via web console)
-  # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/276
+resource "octopusdeploy_process_steps_order" "steps_order" {
+  for_each   = var.create_global_resources ? var.projects : {}
+  space_id   = var.octopus_space_id
+  process_id = octopusdeploy_process.all[each.key].id
+  steps = compact([
+    try(octopusdeploy_process_step.set_image_step[each.key].id, null),
+    try(octopusdeploy_process_step.cronjobs_step[each.key].id, null),
+    try(octopusdeploy_process_step.optional_step[each.key].id, null),
+    try(octopusdeploy_process_step.global_optional_step[each.key].id, null),
+    try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
+    try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
+  ])
+}
+resource "octopusdeploy_process_step" "set_image_step" {
+  for_each = var.create_global_resources ? var.projects : {}
 
-  dynamic "step" {
-    for_each = each.value.create_main_step ? toset([1]) : [] # We iterace once per project if create_main_step is set to true, which by default is.
-    content {
-      condition           = "Success"
-      name                = "Set image on for ${each.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "Set image - ${each.key}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
 
-      run_kubectl_script_action {
-        name           = "Set image for ${each.key}"
-        is_required    = true
-        worker_pool_id = local.data_worker_pool.id
-
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
-
-        run_on_server = true
-        sort_order    = 1
-        script_body   = local.set_image_script_body
-
-        properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
-        }
-      }
-    }
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
 
-  dynamic "step" {
-    for_each = toset(each.value.cronjobs)
-    content {
-      condition           = "Success"
-      name                = "Set image for ${step.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
 
-      run_kubectl_script_action {
-        name           = "Set image for ${step.key}"
-        is_required    = true
-        worker_pool_id = local.data_worker_pool.id
-
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+resource "octopusdeploy_process_step" "cronjobs_step" {
+  for_each = var.create_global_resources ? {
+    for pair in flatten([
+      for project_key, project in var.projects : [
+        for id, cronjob in project.cronjobs : {
+          key         = "${project_key}.${id}"
+          project_key = project_key
+          cronjob     = cronjob
         }
-
-        run_on_server = true
-        sort_order    = 1
-        script_body   = local.cronjobs_script_body
-        properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
-        }
-      }
+      ]
+      ]) : pair.key => {
+      project_key = pair.project_key
+      cronjob     = pair.cronjob
     }
+  } : {}
+
+  process_id          = octopusdeploy_process.all[each.value.project_key].id
+  space_id            = var.octopus_space_id
+  name                = "Set cron image - ${each.value.project_key} - ${each.value.cronjob}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
+
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
 
-  # Global optional_steps (?)
-  dynamic "step" {
-    for_each = var.optional_steps
-    content {
-      condition           = "Success"
-      name                = "${lookup(step.value, "name", "")} - ${each.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
 
-      run_kubectl_script_action {
-        name           = "Optional Step for ${lookup(step.value, "name", "")} - ${each.key}"
-        is_required    = true
-        worker_pool_id = local.data_worker_pool.id
+resource "octopusdeploy_process_step" "optional_step" {
+  for_each = var.create_global_resources ? var.optional_steps : {}
 
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "optional step - ${each.key}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
 
-        run_on_server = true
-        sort_order    = 1
-        script_body   = lookup(step.value, "script_body", "")
-
-        properties = {
-          "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-          "Octopus.Action.RunOnServer"               = "true"
-          "Octopus.Action.Script.ScriptSource"       = "Inline"
-          "Octopus.Action.Script.ScriptBody"         = lookup(step.value, "script_body", "")
-          "Octopus.Action.Script.Syntax"             = "Bash"
-          "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-          "OctopusUseBundledTooling"                 = "False"
-        }
-      }
-    }
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = lookup(each.value, "script_body", "")
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
 
-  # Project specific optional_steps (?)
-  dynamic "step" {
-    for_each = each.value.optional_steps
-    content {
-      condition           = "Success"
-      name                = step.value.name
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
 
-      run_kubectl_script_action {
-        name           = "Optional Step for - ${each.key}"
-        is_required    = step.value.is_required
-        worker_pool_id = local.data_worker_pool.id
+resource "octopusdeploy_process_step" "global_optional_step" {
+  for_each = var.create_global_resources && length(var.optional_steps) > 0 ? var.projects : {}
 
-        container {
-          feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-          image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-        }
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "global project optional step - ${each.key}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
 
-        properties = step.value.properties
-      }
-    }
+
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = lookup(var.optional_steps, "is_required", true)
+  worker_pool_id = local.data_worker_pool.id
+
+  properties = lookup(var.optional_steps, "properties", {})
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
+
+resource "octopusdeploy_process_templated_step" "slack_notification_step" {
+  for_each         = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+  condition        = "Always"
+  process_id       = octopusdeploy_process.all[each.key].id
+  space_id         = var.octopus_space_id
+  name             = "Slack Notification Step - ${each.key}"
+  start_trigger    = "StartAfterPrevious"
+  template_id      = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
+  template_version = 4
+
+  properties = {
+    "Octopus.Action.RunOnServer"         = "False"
+    "Octopus.Action.Script.ScriptSource" = "Inline"
+    "Octopus.Action.TargetRoles"         = join(",", var.octopus_environments)
+    "Octopus.Action.Script.ScriptBody"   = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
+
   }
 
-  # Another workaround for this issue
-  # https://github.com/OctopusDeployLabs/terraform-provider-octopusdeploy/issues/145
-  dynamic "step" {
-    for_each = var.enable_slack ? toset([1]) : [] # We iterace once per project if slack is enabled.
-    content {
-      condition           = "Always"
-      name                = "Slack Detailed Notification for ${each.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      target_roles        = var.octopus_environments
-      run_script_action {
-        name = "Slack Template Notification"
-        action_template {
-          # This id can be found on the community template URL on octopus app
-          # https://filingramp.octopus.app/app#/Spaces-1/library/steptemplates/community/CommunityActionTemplates-370
-          community_action_template_id = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].CommunityActionTemplateId
-          version                      = 4
-          id                           = jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Id
-
-        }
-        script_syntax = "Bash"
-        script_body   = lookup(jsondecode(data.curl2.slack_get_template_id.response.body).Items[0].Properties, "Octopus.Action.Script.ScriptBody")
-      }
-    }
+  execution_properties = {
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
   }
+}
 
-  dynamic "step" {
-    for_each = var.enable_newrelic ? toset([1]) : [] # We iterace once per project if newrelic is enabled.
-    content {
-      condition           = "Success"
-      name                = "New Relic Deployment for ${each.key}"
-      package_requirement = "LetOctopusDecide"
-      start_trigger       = "StartAfterPrevious"
-      run_script_action {
-        name           = "New Relic Deployment for ${each.key}"
-        is_required    = true
-        worker_pool_id = local.data_worker_pool.id
-        run_on_server  = "true"
-        script_body    = <<-EOT
+resource "octopusdeploy_process_step" "newrelic_step" {
+  for_each = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+
+  process_id          = octopusdeploy_process.all[each.key].id
+  space_id            = var.octopus_space_id
+  name                = "NewRelic - ${each.key}"
+  condition           = "Success"
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
+
+  type           = "Octopus.Script"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+    "Octopus.Action.Script.ScriptBody"         = <<-EOT
 USER="$(get_octopusvariable "Octopus.Deployment.CreatedBy.Username")"
 RELEASE="$(get_octopusvariable "Octopus.Release.Number")"
 NOTES="$(get_octopusvariable "Octopus.Release.Notes")"
@@ -253,10 +267,14 @@ curl ${var.newrelic_api_url} \
   --data-binary "$(generate_post_data)" \
   -s
 EOT
-        script_syntax  = "Bash"
-        script_source  = "Inline"
-      }
-    }
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
+  }
+
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
   }
 }
 
@@ -295,8 +313,8 @@ resource "octopusdeploy_variable" "deployment_name" {
   depends_on = [
     octopusdeploy_project.all
   ]
-
 }
+
 ###############
 # Slack Template Installation
 ###############
@@ -332,7 +350,6 @@ data "curl2" "slack_get_template_id" {
     Content-Type : "application/json"
   }
 }
-
 
 #####
 # Slack Notification Variables
@@ -401,6 +418,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
 
   }
 }
+
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
   for_each = var.enable_slack ? var.projects : {}
   space_id = var.octopus_space_id
@@ -483,7 +501,6 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 ##########
 # New Relic
 ##########
-
 resource "octopusdeploy_variable" "newrelic_apikey" {
   for_each        = var.enable_newrelic ? var.projects : {}
   space_id        = var.octopus_space_id
@@ -509,7 +526,6 @@ resource "octopusdeploy_variable" "newrelic_guid" {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 }
-
 
 resource "octopusdeploy_variable" "newrelic_user" {
   for_each = var.enable_newrelic ? var.projects : {}
