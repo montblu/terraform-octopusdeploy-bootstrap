@@ -8,7 +8,7 @@ Using this `deployment-process` module makes the migration easier (Only changes 
 Thus the process summary is as follows:
 
 - ensure running `terrabutler tf -site X plan` with `v6.x` produces no changes
-- modify the module version to `v7.x` and run `terrabutler tf -site X init -upgrade` (**DO NOT APPLY YET**)
+- modify the module version to `v7.x` and run `terrabutler tf -site X init` (**DO NOT APPLY YET**)
 - remove legacy resources from tfstate \*
 - import new resources to tfstate \*
 - `terrabutler tf -site X apply` (with the new module version)
