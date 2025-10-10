@@ -58,16 +58,20 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
   space_id   = var.octopus_space_id
   process_id = octopusdeploy_process.all[each.key].id
   steps = compact([
+    try(octopusdeploy_process_step.pre_main_optional_step[each.key].id, null),
     try(octopusdeploy_process_step.set_image_step[each.key].id, null),
     try(octopusdeploy_process_step.cronjobs_step[each.key].id, null),
-    try(octopusdeploy_process_step.optional_step[each.key].id, null),
-    try(octopusdeploy_process_step.global_optional_step[each.key].id, null),
+    try(octopusdeploy_process_step.post_main_optional_step[each.key].id, null),
+    try(octopusdeploy_process_step.project_optional_step[each.key].id, null),
     try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
     try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
   ])
 }
 resource "octopusdeploy_process_step" "set_image_step" {
-  for_each = var.create_global_resources ? var.projects : {}
+    for_each = var.create_global_resources ? {
+    for project_key, project in var.projects : project_key => project
+    if try(project.create_main_step, true)
+  } : {}
 
   process_id          = octopusdeploy_process.all[each.key].id
   space_id            = var.octopus_space_id
@@ -143,13 +147,28 @@ resource "octopusdeploy_process_step" "cronjobs_step" {
   }
 }
 
-resource "octopusdeploy_process_step" "optional_step" {
-  for_each = var.create_global_resources ? var.optional_steps : {}
+resource "octopusdeploy_process_step" "post_main_optional_step" {
+  for_each = var.create_global_resources ? {
+    for pair in flatten([
+      for project_key, _ in var.projects : [
+        for step_key, step in var.post_main_optional_steps : {
+          key         = "${project_key}.${step_key}"
+          project_key = project_key
+          step_key    = step_key
+          step        = step
+        }
+      ]
+    ]) : pair.key => {
+      project_key = pair.project_key
+      step_key    = pair.step_key
+      step        = pair.step
+    }
+  } : {}
 
-  process_id          = octopusdeploy_process.all[each.key].id
+  process_id          = octopusdeploy_process.all[each.value.project_key].id
   space_id            = var.octopus_space_id
-  name                = "optional step - ${each.key}"
-  condition           = "Success"
+  name                = "post optional step - ${each.value.project_key} - ${each.value.step_key}"
+  condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
@@ -160,7 +179,7 @@ resource "octopusdeploy_process_step" "optional_step" {
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
     "Octopus.Action.RunOnServer"               = "true"
     "Octopus.Action.Script.ScriptSource"       = "Inline"
-    "Octopus.Action.Script.ScriptBody"         = lookup(each.value, "script_body", "")
+    "Octopus.Action.Script.ScriptBody"         = lookup(each.value.step, "script_body", "")
     "Octopus.Action.Script.Syntax"             = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
     "OctopusUseBundledTooling"                 = "False"
@@ -175,22 +194,83 @@ resource "octopusdeploy_process_step" "optional_step" {
   }
 }
 
-resource "octopusdeploy_process_step" "global_optional_step" {
-  for_each = var.create_global_resources && length(var.optional_steps) > 0 ? var.projects : {}
+resource "octopusdeploy_process_step" "pre_main_optional_step" {
+  for_each = var.create_global_resources ? {
+    for pair in flatten([
+      for project_key, _ in var.projects : [
+        for step_key, step in var.pre_main_optional_steps : {
+          key         = "${project_key}.${step_key}"
+          project_key = project_key
+          step_key    = step_key
+          step        = step
+        }
+      ]
+    ]) : pair.key => {
+      project_key = pair.project_key
+      step_key    = pair.step_key
+      step        = pair.step
+    }
+  } : {}
 
-  process_id          = octopusdeploy_process.all[each.key].id
+  process_id          = octopusdeploy_process.all[each.value.project_key].id
   space_id            = var.octopus_space_id
-  name                = "global project optional step - ${each.key}"
-  condition           = "Success"
+  name                = "pre optional step - ${each.value.project_key} - ${each.value.step_key}"
+  condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = true
+  worker_pool_id = local.data_worker_pool.id
+  execution_properties = {
+    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"               = "true"
+    "Octopus.Action.Script.ScriptSource"       = "Inline"
+    "Octopus.Action.Script.ScriptBody"         = lookup(each.value.step, "script_body", "")
+    "Octopus.Action.Script.Syntax"             = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
+    "OctopusUseBundledTooling"                 = "False"
+  }
+  properties = {
+    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
+  }
+
+  container = {
+    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
+    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
+  }
+}
+
+resource "octopusdeploy_process_step" "project_optional_step" {
+  for_each = var.create_global_resources ? {
+    for pair in flatten([
+      for project_key, project in var.projects : [
+        for step_key, step in lookup(project, "project_steps", {}) : {
+          key        = "${project_key}.${step_key}"
+          project_key = project_key
+          step_key    = step_key
+          step        = step
+        }
+      ]
+    ]) : pair.key => {
+      project_key = pair.project_key
+      step_key    = pair.step_key
+      step        = pair.step
+    }
+  } : {}
+
+  process_id          = octopusdeploy_process.all[each.value.project_key].id
+  space_id            = var.octopus_space_id
+  name                = "project optional step - ${lookup(each.value.step, "name")}"
+  condition           = lookup(each.value.step, "condition", "Success")
+  package_requirement = "LetOctopusDecide"
+  start_trigger       = "StartAfterPrevious"
 
   type           = "Octopus.KubernetesRunScript"
-  is_required    = lookup(var.optional_steps, "is_required", true)
+  is_required    = lookup(each.value.step, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
-  properties = lookup(var.optional_steps, "properties", {})
+  properties = lookup(each.value.step, "properties", {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
@@ -296,6 +376,10 @@ resource "octopusdeploy_variable" "ecr_url" {
   depends_on = [
     octopusdeploy_project.all
   ]
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "deployment_name" {
@@ -313,6 +397,10 @@ resource "octopusdeploy_variable" "deployment_name" {
   depends_on = [
     octopusdeploy_project.all
   ]
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 ###############
@@ -365,6 +453,10 @@ resource "octopusdeploy_variable" "slack_webhook" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "octopus_url" {
@@ -376,7 +468,10 @@ resource "octopusdeploy_variable" "octopus_url" {
   value    = var.octopus_address
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -389,7 +484,10 @@ resource "octopusdeploy_variable" "slack_channel" {
   value    = var.slack_channel
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -402,7 +500,10 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -415,7 +516,10 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -428,7 +532,10 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -441,7 +548,10 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -454,7 +564,10 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -467,7 +580,10 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -480,7 +596,10 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -493,7 +612,10 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -511,7 +633,10 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
   sensitive_value = var.newrelic_apikey
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
 
+  lifecycle {
+    ignore_changes = [scope]
   }
 }
 
@@ -525,6 +650,10 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
+
+  lifecycle {
+    ignore_changes = [scope]
+  }
 }
 
 resource "octopusdeploy_variable" "newrelic_user" {
@@ -536,5 +665,9 @@ resource "octopusdeploy_variable" "newrelic_user" {
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
+  }
+
+  lifecycle {
+    ignore_changes = [scope]
   }
 }

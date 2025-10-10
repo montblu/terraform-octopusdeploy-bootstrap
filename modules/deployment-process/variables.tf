@@ -83,9 +83,10 @@ variable "projects" {
     create_main_step = optional(bool, true)
     cronjobs         = optional(list(string), [])
     deployment_name  = optional(string, "")
-    optional_steps = optional(map(object({
+    project_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
+      condition   = optional(string, "Success")
       properties  = map(string)
     })), {})
   }))
@@ -126,14 +127,39 @@ variable "octopus_github_feed_name" {
   default     = "Github Container Registry"
 }
 
-variable "optional_steps" {
+variable "pre_main_optional_steps" {
+  type = map(object({
+      name        = string
+      script_body = optional(string, "")
+    }))
   default = {
     /*
-    optional_step1 = {
+    pre_optional_step1 = {
       name = "step1"
       script_body = "kubectl "
     },
-    optional_step2 = {
+    pre_optional_step2 = {
+      name = "step2"
+      script_body = "kubectl "
+    }
+   */
+  }
+}
+
+  
+
+variable "post_main_optional_steps" {
+  type = map(object({
+      name        = string
+      script_body = optional(string, "")
+    }))
+  default = {
+    /*
+    post_optional_step1 = {
+      name = "step1"
+      script_body = "kubectl "
+    },
+    post_optional_step2 = {
       name = "step2"
       script_body = "kubectl "
     }
