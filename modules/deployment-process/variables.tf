@@ -89,6 +89,18 @@ variable "projects" {
       condition   = optional(string, "Success")
       properties  = map(string)
     })), {})
+    pre_main_optional_steps = optional(map(object({
+      name        = string
+      is_required = optional(bool, true)
+      condition   = optional(string, "Success")
+      properties  = map(string)
+    })), {})
+    post_main_optional_steps = optional(map(object({
+      name        = string
+      is_required = optional(bool, true)
+      condition   = optional(string, "Success")
+      properties  = map(string)
+    })), {})
   }))
 }
 
@@ -125,46 +137,6 @@ variable "octopus_github_feed_name" {
   description = "Octopus Github feed name"
   type        = string
   default     = "Github Container Registry"
-}
-
-variable "pre_main_optional_steps" {
-  type = map(object({
-      name        = string
-      script_body = optional(string, "")
-    }))
-  default = {
-    /*
-    pre_optional_step1 = {
-      name = "step1"
-      script_body = "kubectl "
-    },
-    pre_optional_step2 = {
-      name = "step2"
-      script_body = "kubectl "
-    }
-   */
-  }
-}
-
-  
-
-variable "post_main_optional_steps" {
-  type = map(object({
-      name        = string
-      script_body = optional(string, "")
-    }))
-  default = {
-    /*
-    post_optional_step1 = {
-      name = "step1"
-      script_body = "kubectl "
-    },
-    post_optional_step2 = {
-      name = "step2"
-      script_body = "kubectl "
-    }
-   */
-  }
 }
 
 variable "channels" {
