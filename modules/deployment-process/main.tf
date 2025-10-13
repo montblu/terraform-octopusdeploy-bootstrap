@@ -146,101 +146,28 @@ resource "octopusdeploy_process_step" "cronjobs_step" {
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
   }
 }
-/*
-resource "octopusdeploy_process_step" "post_main_optional_step" {
-  for_each = var.create_global_resources ? {
-    for pair in flatten([
-      for project_key, _ in var.projects : [
-        for step_key, step in var.post_main_optional_steps : {
-          key         = "${project_key}.${step_key}"
-          project_key = project_key
-          step_key    = step_key
-          step        = step
-        }
-      ]
-    ]) : pair.key => {
-      project_key = pair.project_key
-      step_key    = pair.step_key
-      step        = pair.step
-    }
-  } : {}
+resource "octopusdeploy_process_step" "global_optional_step" {
+  for_each = var.create_global_resources && length(var.optional_steps) > 0 ? var.projects : {}
 
-  process_id          = octopusdeploy_process.all[each.value.project_key].id
+  process_id          = octopusdeploy_process.all[each.key].id
   space_id            = var.octopus_space_id
-  name                = "post optional step - ${each.value.project_key} - ${each.value.step_key}"
-  condition           = lookup(each.value.step, "condition", "Success")
+  name                = "global project optional step - ${each.key}"
+  condition           = "Success"
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
-  type           = "Octopus.KubernetesRunScript"
-  is_required    = true
-  worker_pool_id = local.data_worker_pool.id
-  execution_properties = {
-    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-    "Octopus.Action.RunOnServer"               = "true"
-    "Octopus.Action.Script.ScriptSource"       = "Inline"
-    "Octopus.Action.Script.ScriptBody"         = lookup(each.value.step, "script_body", "")
-    "Octopus.Action.Script.Syntax"             = "Bash"
-    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-    "OctopusUseBundledTooling"                 = "False"
-  }
-  properties = {
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
 
+  type           = "Octopus.KubernetesRunScript"
+  is_required    = lookup(var.optional_steps, "is_required", true)
+  worker_pool_id = local.data_worker_pool.id
+
+  properties = lookup(var.optional_steps, "properties", {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
   }
 }
 
-resource "octopusdeploy_process_step" "pre_main_optional_step" {
-  for_each = var.create_global_resources ? {
-    for pair in flatten([
-      for project_key, _ in var.projects : [
-        for step_key, step in var.pre_main_optional_steps : {
-          key         = "${project_key}.${step_key}"
-          project_key = project_key
-          step_key    = step_key
-          step        = step
-        }
-      ]
-    ]) : pair.key => {
-      project_key = pair.project_key
-      step_key    = pair.step_key
-      step        = pair.step
-    }
-  } : {}
-
-  process_id          = octopusdeploy_process.all[each.value.project_key].id
-  space_id            = var.octopus_space_id
-  name                = "pre optional step - ${each.value.project_key} - ${each.value.step_key}"
-  condition           = lookup(each.value.step, "condition", "Success")
-  package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
-
-  type           = "Octopus.KubernetesRunScript"
-  is_required    = true
-  worker_pool_id = local.data_worker_pool.id
-  execution_properties = {
-    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-    "Octopus.Action.RunOnServer"               = "true"
-    "Octopus.Action.Script.ScriptSource"       = "Inline"
-    "Octopus.Action.Script.ScriptBody"         = lookup(each.value.step, "script_body", "")
-    "Octopus.Action.Script.Syntax"             = "Bash"
-    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-    "OctopusUseBundledTooling"                 = "False"
-  }
-  properties = {
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
-
-  container = {
-    feed_id = data.octopusdeploy_feeds.current.feeds[0].id
-    image   = "montblu/workertools:${var.octopus_worker_tools_version}"
-  }
-}
-*/
 resource "octopusdeploy_process_step" "pre_main_optional_step" {
   for_each = var.create_global_resources ? {
     for pair in flatten([
