@@ -402,10 +402,6 @@ resource "octopusdeploy_variable" "ecr_url" {
   depends_on = [
     octopusdeploy_project.all
   ]
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "deployment_name" {
@@ -423,10 +419,6 @@ resource "octopusdeploy_variable" "deployment_name" {
   depends_on = [
     octopusdeploy_project.all
   ]
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 ###############
@@ -479,10 +471,6 @@ resource "octopusdeploy_variable" "slack_webhook" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "octopus_url" {
@@ -496,9 +484,7 @@ resource "octopusdeploy_variable" "octopus_url" {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
 
-  lifecycle {
-    ignore_changes = [scope]
-  }
+
 }
 
 resource "octopusdeploy_variable" "slack_channel" {
@@ -512,9 +498,7 @@ resource "octopusdeploy_variable" "slack_channel" {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
-  lifecycle {
-    ignore_changes = [scope]
-  }
+
 }
 
 resource "octopusdeploy_variable" "DeploymentInfoText" {
@@ -528,9 +512,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
 
-  lifecycle {
-    ignore_changes = [scope]
-  }
+
 }
 
 resource "octopusdeploy_variable" "IncludeFieldRelease" {
@@ -542,10 +524,6 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -559,10 +537,6 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeFieldProject" {
@@ -574,10 +548,6 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -591,10 +561,6 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeFieldUsername" {
@@ -606,10 +572,6 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -623,10 +585,6 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
@@ -638,10 +596,6 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   value    = "True"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
 
@@ -660,10 +614,6 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "newrelic_guid" {
@@ -676,10 +626,6 @@ resource "octopusdeploy_variable" "newrelic_guid" {
   scope {
     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
-
-  lifecycle {
-    ignore_changes = [scope]
-  }
 }
 
 resource "octopusdeploy_variable" "newrelic_user" {
@@ -691,9 +637,5 @@ resource "octopusdeploy_variable" "newrelic_user" {
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
     environments = data.octopusdeploy_environments.all.environments[*].id
-  }
-
-  lifecycle {
-    ignore_changes = [scope]
   }
 }
