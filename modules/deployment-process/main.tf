@@ -57,15 +57,29 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
   for_each   = var.create_global_resources ? var.projects : {}
   space_id   = var.octopus_space_id
   process_id = octopusdeploy_process.all[each.key].id
-  steps = compact([
-    try(octopusdeploy_process_step.pre_main_optional_step[each.key].id, null),
-    try(octopusdeploy_process_step.set_image_step[each.key].id, null),
-    try(octopusdeploy_process_step.cronjobs_step[each.key].id, null),
-    try(octopusdeploy_process_step.post_main_optional_step[each.key].id, null),
-    try(octopusdeploy_process_step.project_optional_step[each.key].id, null),
-    try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
-    try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
-  ])
+
+  steps = compact(concat(
+    [
+      for k, v in octopusdeploy_process_step.pre_main_optional_step :
+      split(".", k)[0] == each.key ? v.id : null
+    ],
+    [
+      try(octopusdeploy_process_step.set_image_step[each.key].id, null),
+    ],
+    [
+      for k, v in octopusdeploy_process_step.cronjobs_step :
+      split(".", k)[0] == each.key ? v.id : null
+    ],
+    [
+      for k, v in octopusdeploy_process_step.post_main_optional_step :
+      split(".", k)[0] == each.key ? v.id : null
+    ],
+    [
+      try(octopusdeploy_process_step.project_optional_step[each.key].id, null),
+      try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
+      try(octopusdeploy_process_step.newrelic_step[each.key].id, null)
+    ]
+  ))
 }
 resource "octopusdeploy_process_step" "set_image_step" {
   for_each = var.create_global_resources ? {
@@ -173,7 +187,7 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
     for pair in flatten([
       for project_key, project in var.projects : [
         for step_key, step in lookup(project, "pre_main_optional_steps", {}) : {
-          key         = "${project_key}"
+          key         = "${project_key}.${step_key}"
           project_key = project_key
           step_key    = step_key
           step        = step
@@ -213,7 +227,7 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
     for pair in flatten([
       for project_key, project in var.projects : [
         for step_key, step in lookup(project, "post_main_optional_steps", {}) : {
-          key         = "${project_key}"
+          key         = "${project_key}.${step_key}"
           project_key = project_key
           step_key    = step_key
           step        = step
