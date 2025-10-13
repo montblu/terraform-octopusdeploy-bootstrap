@@ -77,7 +77,8 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
     [
       try(octopusdeploy_process_step.project_optional_step[each.key].id, null),
       try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
-      try(octopusdeploy_process_step.newrelic_step[each.key].id, null)
+      try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
+      try(octopusdeploy_process_step.global_optional_step[each.key].id, null)
     ]
   ))
 }
