@@ -104,6 +104,10 @@ variable "projects" {
   }))
 }
 variable "optional_steps" {
+  type = map(object({
+    name        = string
+    properties  = map(string)
+    }))
   default = {
     /*
     optional_step1 = {
