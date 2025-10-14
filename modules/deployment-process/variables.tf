@@ -83,13 +83,6 @@ variable "projects" {
     create_main_step = optional(bool, true)
     cronjobs         = optional(list(string), [])
     deployment_name  = optional(string, "")
-    optional_steps = optional(map(object({
-      name        = string
-      is_required = optional(bool, true)
-      condition   = optional(string, "Success")
-      properties  = map(string)
-      condition_expression = optional(string, "")
-    })), {})
     pre_main_optional_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
