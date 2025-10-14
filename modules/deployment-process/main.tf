@@ -60,6 +60,10 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
 
   steps = compact(concat(
     [
+      for k, v in octopusdeploy_process_step.global_optional_step :
+      split(".", k)[0] == each.key ? v.id : null
+    ],
+    [
       for k, v in octopusdeploy_process_step.pre_main_optional_step :
       split(".", k)[0] == each.key ? v.id : null
     ],
@@ -80,10 +84,6 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
     ],
         [
       for k, v in octopusdeploy_process_step.project_optional_step :
-      split(".", k)[0] == each.key ? v.id : null
-    ],
-    [
-      for k, v in octopusdeploy_process_step.global_optional_step :
       split(".", k)[0] == each.key ? v.id : null
     ],
   ))
