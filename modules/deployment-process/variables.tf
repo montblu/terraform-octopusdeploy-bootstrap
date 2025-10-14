@@ -83,14 +83,42 @@ variable "projects" {
     create_main_step = optional(bool, true)
     cronjobs         = optional(list(string), [])
     deployment_name  = optional(string, "")
-    optional_steps = optional(map(object({
+    pre_main_optional_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
+      condition   = optional(string, "Success")
       properties  = map(string)
+      condition_expression = optional(string, "")
+    })), {})
+    post_main_optional_steps = optional(map(object({
+      name        = string
+      is_required = optional(bool, true)
+      condition   = optional(string, "Success")
+      properties  = map(string)
+      condition_expression = optional(string, "")
     })), {})
   }))
 }
-
+variable "optional_steps" {
+  type = map(object({
+    name        = string
+    properties  = map(string)
+    condition   = optional(string, "Success")
+    condition_expression = optional(string, "")
+    }))
+  default = {
+    /*
+    optional_step1 = {
+      name = "step1"
+      script_body = "kubectl "
+    },
+    optional_step2 = {
+      name = "step2"
+      script_body = "kubectl "
+    }
+   */
+  }
+}
 variable "enable_newrelic" {
   description = "Enable newrelic API notification"
   type        = bool
@@ -124,21 +152,6 @@ variable "octopus_github_feed_name" {
   description = "Octopus Github feed name"
   type        = string
   default     = "Github Container Registry"
-}
-
-variable "optional_steps" {
-  default = {
-    /*
-    optional_step1 = {
-      name = "step1"
-      script_body = "kubectl "
-    },
-    optional_step2 = {
-      name = "step2"
-      script_body = "kubectl "
-    }
-   */
-  }
 }
 
 variable "channels" {
