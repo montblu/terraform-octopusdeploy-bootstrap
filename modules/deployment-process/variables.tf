@@ -110,6 +110,7 @@ variable "optional_steps" {
   type = map(object({
     name        = string
     properties  = map(string)
+    condition   = optional(string, "Success")
     condition_expression = optional(string, "")
     }))
   default = {
