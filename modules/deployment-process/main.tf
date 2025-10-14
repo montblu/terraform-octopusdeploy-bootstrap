@@ -238,7 +238,7 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
   execution_properties = lookup(each.value.step, "properties", {})
 
   properties = {
-    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
+    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.step, "condition_expression", "")
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
   container = {
