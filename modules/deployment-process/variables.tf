@@ -88,21 +88,21 @@ variable "projects" {
       is_required = optional(bool, true)
       condition   = optional(string, "Success")
       properties  = map(string)
-      condition_expression = optional(string, null)
+      condition_expression = optional(string, "")
     })), {})
     pre_main_optional_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
       condition   = optional(string, "Success")
       properties  = map(string)
-      condition_expression = optional(string, null)
+      condition_expression = optional(string, "")
     })), {})
     post_main_optional_steps = optional(map(object({
       name        = string
       is_required = optional(bool, true)
       condition   = optional(string, "Success")
       properties  = map(string)
-      condition_expression = optional(string, null)
+      condition_expression = optional(string, "")
     })), {})
   }))
 }
@@ -110,7 +110,7 @@ variable "optional_steps" {
   type = map(object({
     name        = string
     properties  = map(string)
-    condition_expression = optional(string, null)
+    condition_expression = optional(string, "")
     }))
   default = {
     /*
