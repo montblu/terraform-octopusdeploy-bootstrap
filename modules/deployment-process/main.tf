@@ -195,11 +195,10 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   worker_pool_id = local.data_worker_pool.id
   execution_properties = lookup(each.value.optional_steps, "properties", {})
   
-  properties = {
-    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
-
+  properties = merge({
+      "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)},
+       lookup(each.value.optional_steps, "condition", "Success") == "Variable" ? { "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
+  } : {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
@@ -237,10 +236,10 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
 
   execution_properties = lookup(each.value.step, "properties", {})
 
-  properties = {
-    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.step, "condition_expression", "")
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
+  properties = merge({
+      "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)},
+       lookup(each.value.step, "condition", "Success") == "Variable" ? { "Octopus.Step.ConditionVariableExpression" = lookup(each.value.step, "condition_expression", "")
+  } : {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
@@ -278,10 +277,10 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
 
   execution_properties = lookup(each.value.step, "properties", {})
 
-  properties = {
-    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
+  properties = merge({
+      "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)},
+       lookup(each.value.step, "condition", "Success") == "Variable" ? { "Octopus.Step.ConditionVariableExpression" = lookup(each.value.step, "condition_expression", "")
+  } : {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
@@ -319,10 +318,10 @@ resource "octopusdeploy_process_step" "project_optional_step" {
 
   execution_properties = lookup(each.value.step, "properties", {})
 
-  properties = {
-    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
-    "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
-  }
+  properties = merge({
+      "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)},
+       lookup(each.value.step, "condition", "Success") == "Variable" ? { "Octopus.Step.ConditionVariableExpression" = lookup(each.value.step, "condition_expression", "")
+  } : {})
   container = {
     feed_id = data.octopusdeploy_feeds.current.feeds[0].id
     image   = "montblu/workertools:${var.octopus_worker_tools_version}"
