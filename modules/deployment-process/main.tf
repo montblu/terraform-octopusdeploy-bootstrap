@@ -186,7 +186,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   process_id          = octopusdeploy_process.all[each.value.project_key].id
   space_id            = var.octopus_space_id
   name                = "global project optional step - ${each.value.optional_steps.name}"
-  condition           = "Success"
+  condition           = lookup(each.value.optional_steps, "condition", "Success")
   package_requirement = "LetOctopusDecide"
   start_trigger       = "StartAfterPrevious"
 
@@ -196,6 +196,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   execution_properties = lookup(each.value.optional_steps, "properties", {})
   
   properties = {
+    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
 
@@ -237,6 +238,7 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
   execution_properties = lookup(each.value.step, "properties", {})
 
   properties = {
+    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
   container = {
@@ -277,6 +279,7 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
   execution_properties = lookup(each.value.step, "properties", {})
 
   properties = {
+    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
   container = {
@@ -317,6 +320,7 @@ resource "octopusdeploy_process_step" "project_optional_step" {
   execution_properties = lookup(each.value.step, "properties", {})
 
   properties = {
+    "Octopus.Step.ConditionVariableExpression" = lookup(each.value.optional_steps, "condition_expression", "")
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
   }
   container = {
