@@ -478,7 +478,7 @@ resource "octopusdeploy_variable" "octopus_url" {
   owner_id = local.data_all_projects[each.key].id
   value    = var.octopus_address
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -510,7 +510,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
   owner_id = local.data_all_projects[each.key].id
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -526,7 +526,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -542,7 +542,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -558,7 +558,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -574,7 +574,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -590,7 +590,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -606,7 +606,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -622,7 +622,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -643,7 +643,7 @@ resource "octopusdeploy_variable" "newrelic_apikey" {
   is_sensitive    = true
   sensitive_value = var.newrelic_apikey
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
@@ -675,7 +675,7 @@ resource "octopusdeploy_variable" "newrelic_user" {
   owner_id = local.data_all_projects[each.key].id
   value    = "#{Octopus.Deployment.CreatedBy.Username}"
   scope {
-    environments = data.octopusdeploy_environments.all.environments[*].id
+     environments = [data.octopusdeploy_environments.current.environments[0].id]
   }
 
   lifecycle {
