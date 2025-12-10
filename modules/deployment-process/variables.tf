@@ -84,26 +84,32 @@ variable "projects" {
     cronjobs         = optional(list(string), [])
     deployment_name  = optional(string, "")
     pre_main_optional_steps = optional(map(object({
-      name        = string
-      is_required = optional(bool, true)
-      condition   = optional(string, "Success")
-      properties  = map(string)
+      name                 = string
+      type                 = optional(string, "Octopus.KubernetesRunScript")
+      is_required          = optional(bool, true)
+      start_trigger        = optional(string, "StartAfterPrevious")
+      properties           = map(string)
+      condition            = optional(string, "Success")
       condition_expression = optional(string, "")
     })), {})
     post_main_optional_steps = optional(map(object({
-      name        = string
-      is_required = optional(bool, true)
-      condition   = optional(string, "Success")
-      properties  = map(string)
+      name                 = string
+      type                 = optional(string, "Octopus.KubernetesRunScript")
+      is_required          = optional(bool, true)
+      start_trigger        = optional(string, "StartAfterPrevious")
+      properties           = map(string)
+      condition            = optional(string, "Success")
       condition_expression = optional(string, "")
     })), {})
   }))
 }
 variable "optional_steps" {
   type = map(object({
-    name        = string
-    properties  = map(string)
-    condition   = optional(string, "Success")
+    name                 = string
+    type                 = optional(string, "Octopus.KubernetesRunScript")
+    start_trigger        = optional(string, "StartAfterPrevious")
+    properties           = map(string)
+    condition            = optional(string, "Success")
     condition_expression = optional(string, "")
   }))
   default = {
