@@ -105,7 +105,7 @@ variable "optional_steps" {
     properties  = map(string)
     condition   = optional(string, "Success")
     condition_expression = optional(string, "")
-    }))
+  }))
   default = {
     /*
     optional_step1 = {
