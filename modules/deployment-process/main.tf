@@ -19,7 +19,6 @@ resource "octopusdeploy_channel" "main" {
   depends_on = [octopusdeploy_process.all]
 }
 
-
 # One env resource only
 resource "octopusdeploy_project" "all" {
   for_each = var.create_global_resources ? var.projects : {}
@@ -82,9 +81,9 @@ resource "octopusdeploy_process_steps_order" "steps_order" {
       try(octopusdeploy_process_templated_step.slack_notification_step[each.key].id, null),
       try(octopusdeploy_process_step.newrelic_step[each.key].id, null),
     ],
-   
   ))
 }
+
 resource "octopusdeploy_process_step" "set_image_step" {
   for_each = var.create_global_resources ? {
     for project_key, project in var.projects : project_key => project
@@ -176,7 +175,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
           step        = step
         }
       ]
-    ]): 
+    ]) :
     pair.key => {
       project_key = pair.project_key
       step_key    = pair.step_key
@@ -189,9 +188,9 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   name                = "global project optional step - ${each.value.step.name}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
-  type                 = "Octopus.KubernetesRunScript"
+  type                 = each.value.step.type
   is_required          = true
   worker_pool_id       = local.data_worker_pool.id
   execution_properties = lookup(each.value.step, "properties", {})
@@ -229,9 +228,9 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
   name                = "pre optional step - ${lookup(each.value.step, "name")}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
-  type           = "Octopus.KubernetesRunScript"
+  type           = each.value.step.type
   is_required    = lookup(each.value.step, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
@@ -270,9 +269,9 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
   name                = "post optional step - ${lookup(each.value.step, "name")}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
-  type           = "Octopus.KubernetesRunScript"
+  type           = each.value.step.type
   is_required    = lookup(each.value.step, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
