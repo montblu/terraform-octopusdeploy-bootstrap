@@ -188,7 +188,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   name                = "global project optional step - ${each.value.step.name}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
   type                 = "Octopus.KubernetesRunScript"
   is_required          = true
@@ -228,7 +228,7 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
   name                = "pre optional step - ${lookup(each.value.step, "name")}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
   type           = "Octopus.KubernetesRunScript"
   is_required    = lookup(each.value.step, "is_required", true)
@@ -269,7 +269,7 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
   name                = "post optional step - ${lookup(each.value.step, "name")}"
   condition           = lookup(each.value.step, "condition", "Success")
   package_requirement = "LetOctopusDecide"
-  start_trigger       = "StartAfterPrevious"
+  start_trigger       = each.value.step.start_trigger
 
   type           = "Octopus.KubernetesRunScript"
   is_required    = lookup(each.value.step, "is_required", true)
