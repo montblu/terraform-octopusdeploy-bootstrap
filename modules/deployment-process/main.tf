@@ -190,7 +190,7 @@ resource "octopusdeploy_process_step" "global_optional_step" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = each.value.step.start_trigger
 
-  type                 = "Octopus.KubernetesRunScript"
+  type                 = each.value.step.type
   is_required          = true
   worker_pool_id       = local.data_worker_pool.id
   execution_properties = lookup(each.value.step, "properties", {})
@@ -230,7 +230,7 @@ resource "octopusdeploy_process_step" "pre_main_optional_step" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = each.value.step.start_trigger
 
-  type           = "Octopus.KubernetesRunScript"
+  type           = each.value.step.type
   is_required    = lookup(each.value.step, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
@@ -271,7 +271,7 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
   package_requirement = "LetOctopusDecide"
   start_trigger       = each.value.step.start_trigger
 
-  type           = "Octopus.KubernetesRunScript"
+  type           = each.value.step.type
   is_required    = lookup(each.value.step, "is_required", true)
   worker_pool_id = local.data_worker_pool.id
 
