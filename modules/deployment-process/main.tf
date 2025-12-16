@@ -309,6 +309,17 @@ resource "octopusdeploy_process_templated_step" "slack_notification_step" {
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
   }
+
+  parameters = {
+    "IncludeErrorMessageOnFailure" = "my_IncludeErrorMessageOnFailure"
+    "IncludeLinkOnFailure"         = "my_IncludeLinkOnFailure"
+    "IncludeFieldUsername"         = "my_IncludeFieldUsername"
+    "IncludeFieldRelease"          = "my_IncludeFieldRelease"
+    "IncludeFieldProject"          = "my_IncludeFieldProject"
+    "IncludeFieldMachine"          = "my_IncludeFieldMachine"
+    "IncludeFieldEnvironment"      = "my_IncludeFieldEnvironment"
+    "DeploymentInfoText"           = "my_DeploymentInfoText"
+  }
 }
 
 resource "octopusdeploy_process_step" "newrelic_step" {
@@ -504,7 +515,7 @@ resource "octopusdeploy_variable" "slack_channel" {
 resource "octopusdeploy_variable" "DeploymentInfoText" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "DeploymentInfoText"
+  name     = "my_DeploymentInfoText"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "#{Octopus.Project.Name} release #{Octopus.Release.Number} to #{Octopus.Environment.Name} (#{Octopus.Machine.Name})"
@@ -520,7 +531,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
 resource "octopusdeploy_variable" "IncludeFieldRelease" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeFieldRelease"
+  name     = "my_IncludeFieldRelease"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -536,7 +547,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeFieldMachine"
+  name     = "my_IncludeFieldMachine"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -552,7 +563,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
 resource "octopusdeploy_variable" "IncludeFieldProject" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeFieldProject"
+  name     = "my_IncludeFieldProject"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -568,7 +579,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
 resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeFieldEnvironment"
+  name     = "my_IncludeFieldEnvironment"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -584,7 +595,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
 resource "octopusdeploy_variable" "IncludeFieldUsername" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeFieldUsername"
+  name     = "my_IncludeFieldUsername"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -600,7 +611,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
 resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
   for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeLinkOnFailure"
+  name     = "my_IncludeLinkOnFailure"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
@@ -614,9 +625,9 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
-  for_each = var.enable_slack && var.create_global_resources? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
-  name     = "IncludeErrorMessageOnFailure"
+  name     = "my_IncludeErrorMessageOnFailure"
   type     = "String"
   owner_id = local.data_all_projects[each.key].id
   value    = "True"
