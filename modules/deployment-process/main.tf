@@ -470,7 +470,7 @@ resource "octopusdeploy_variable" "slack_webhook" {
 }
 
 resource "octopusdeploy_variable" "octopus_url" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "OctopusBaseUrl"
   type     = "String"
@@ -502,7 +502,7 @@ resource "octopusdeploy_variable" "slack_channel" {
 }
 
 resource "octopusdeploy_variable" "DeploymentInfoText" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "DeploymentInfoText"
   type     = "String"
@@ -518,7 +518,7 @@ resource "octopusdeploy_variable" "DeploymentInfoText" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldRelease" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldRelease"
   type     = "String"
@@ -534,7 +534,7 @@ resource "octopusdeploy_variable" "IncludeFieldRelease" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldMachine" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldMachine"
   type     = "String"
@@ -550,7 +550,7 @@ resource "octopusdeploy_variable" "IncludeFieldMachine" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldProject" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldProject"
   type     = "String"
@@ -566,7 +566,7 @@ resource "octopusdeploy_variable" "IncludeFieldProject" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldEnvironment"
   type     = "String"
@@ -582,7 +582,7 @@ resource "octopusdeploy_variable" "IncludeFieldEnvironment" {
 }
 
 resource "octopusdeploy_variable" "IncludeFieldUsername" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeFieldUsername"
   type     = "String"
@@ -598,7 +598,7 @@ resource "octopusdeploy_variable" "IncludeFieldUsername" {
 }
 
 resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeLinkOnFailure"
   type     = "String"
@@ -614,7 +614,7 @@ resource "octopusdeploy_variable" "IncludeLinkOnFailure" {
 }
 
 resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
-  for_each = var.enable_slack ? var.projects : {}
+  for_each = var.enable_slack && var.create_global_resources? var.projects : {}
   space_id = var.octopus_space_id
   name     = "IncludeErrorMessageOnFailure"
   type     = "String"
@@ -634,7 +634,7 @@ resource "octopusdeploy_variable" "IncludeErrorMessageOnFailure" {
 # New Relic
 ##########
 resource "octopusdeploy_variable" "newrelic_apikey" {
-  for_each        = var.enable_newrelic ? var.projects : {}
+  for_each        = var.enable_newrelic && var.create_global_resources ? var.projects : {}
   space_id        = var.octopus_space_id
   name            = "ApiKey"
   type            = "Sensitive"
@@ -667,7 +667,7 @@ resource "octopusdeploy_variable" "newrelic_guid" {
 }
 
 resource "octopusdeploy_variable" "newrelic_user" {
-  for_each = var.enable_newrelic ? var.projects : {}
+  for_each = var.enable_newrelic && var.create_global_resources ? var.projects : {}
   space_id = var.octopus_space_id
   name     = "User"
   type     = "String"
