@@ -355,14 +355,14 @@ resource "octopusdeploy_process_templated_step" "slack_notification_step" {
   }
 
   parameters = {
-    "IncludeErrorMessageOnFailure" = "my_IncludeErrorMessageOnFailure"
-    "IncludeLinkOnFailure"         = "my_IncludeLinkOnFailure"
-    "IncludeFieldUsername"         = "my_IncludeFieldUsername"
-    "IncludeFieldRelease"          = "my_IncludeFieldRelease"
-    "IncludeFieldProject"          = "my_IncludeFieldProject"
-    "IncludeFieldMachine"          = "my_IncludeFieldMachine"
-    "IncludeFieldEnvironment"      = "my_IncludeFieldEnvironment"
-    "DeploymentInfoText"           = "my_DeploymentInfoText"
+    "IncludeErrorMessageOnFailure" = "#{my_IncludeErrorMessageOnFailure}"
+    "IncludeLinkOnFailure"         = "#{my_IncludeLinkOnFailure}"
+    "IncludeFieldUsername"         = "#{my_IncludeFieldUsername}"
+    "IncludeFieldRelease"          = "#{my_IncludeFieldRelease}"
+    "IncludeFieldProject"          = "#{my_IncludeFieldProject}"
+    "IncludeFieldMachine"          = "#{my_IncludeFieldMachine}"
+    "IncludeFieldEnvironment"      = "#{my_IncludeFieldEnvironment}"
+    "DeploymentInfoText"           = "#{my_DeploymentInfoText}"
   }
 }
 
