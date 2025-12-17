@@ -103,14 +103,26 @@ variable "projects" {
     })), {})
   }))
 }
-variable "optional_steps" {
+variable "global_steps" {
   type = map(object({
-    name                 = string
-    type                 = optional(string, "Octopus.KubernetesRunScript")
-    start_trigger        = optional(string, "StartAfterPrevious")
-    properties           = map(string)
-    condition            = optional(string, "Success")
-    condition_expression = optional(string, "")
+    pre_main_global_steps = optional(map(object({
+      name                 = string
+      type                 = optional(string, "Octopus.KubernetesRunScript")
+      is_required          = optional(bool, true)
+      start_trigger        = optional(string, "StartAfterPrevious")
+      properties           = map(string)
+      condition            = optional(string, "Success")
+      condition_expression = optional(string, "")
+    })), {})
+    post_main_global_steps = optional(map(object({
+      name                 = string
+      type                 = optional(string, "Octopus.KubernetesRunScript")
+      is_required          = optional(bool, true)
+      start_trigger        = optional(string, "StartAfterPrevious")
+      properties           = map(string)
+      condition            = optional(string, "Success")
+      condition_expression = optional(string, "")
+    })), {})
   }))
   default = {
     /*
