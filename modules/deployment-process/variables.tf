@@ -103,9 +103,8 @@ variable "projects" {
     })), {})
   }))
 }
-variable "global_steps" {
+variable "pre_main_global_steps" {
   type = map(object({
-    pre_main_global_steps = optional(map(object({
       name                 = string
       type                 = optional(string, "Octopus.KubernetesRunScript")
       is_required          = optional(bool, true)
@@ -113,8 +112,24 @@ variable "global_steps" {
       properties           = map(string)
       condition            = optional(string, "Success")
       condition_expression = optional(string, "")
-    })), {})
-    post_main_global_steps = optional(map(object({
+    }))
+  
+  default = {
+    /*
+    optional_step1 = {
+      name = "step1"
+      script_body = "kubectl "
+    },
+    optional_step2 = {
+      name = "step2"
+      script_body = "kubectl "
+    }
+   */
+  }
+}
+
+variable "post_main_global_steps" {
+  type = map(object({
       name                 = string
       type                 = optional(string, "Octopus.KubernetesRunScript")
       is_required          = optional(bool, true)
@@ -122,8 +137,8 @@ variable "global_steps" {
       properties           = map(string)
       condition            = optional(string, "Success")
       condition_expression = optional(string, "")
-    })), {})
-  }))
+    }))
+
   default = {
     /*
     optional_step1 = {

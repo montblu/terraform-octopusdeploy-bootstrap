@@ -170,8 +170,8 @@ resource "octopusdeploy_process_step" "cronjobs_step" {
 resource "octopusdeploy_process_step" "pre_main_global_step" {
   for_each = var.create_global_resources ? {
     for pair in flatten([
-      for project_key, project in var.global_steps : [
-        for step_key, step in lookup(project, "pre_main_global_steps", {}) : {
+      for project_key, project in var.projects : [
+        for step_key, step in var.pre_main_global_steps : {
           key         = "${project_key}.${step_key}"
           project_key = project_key
           step_key    = step_key
@@ -211,8 +211,8 @@ resource "octopusdeploy_process_step" "pre_main_global_step" {
 resource "octopusdeploy_process_step" "post_main_global_step" {
   for_each = var.create_global_resources ? {
     for pair in flatten([
-      for project_key, project in var.global_steps : [
-        for step_key, step in lookup(project, "post_main_global_steps", {}) : {
+      for project_key, project in var.projects : [
+        for step_key, step in var.post_main_global_steps : {
           key         = "${project_key}.${step_key}"
           project_key = project_key
           step_key    = step_key
