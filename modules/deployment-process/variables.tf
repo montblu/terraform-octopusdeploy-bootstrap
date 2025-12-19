@@ -80,9 +80,10 @@ variable "slack_channel" {
 variable "projects" {
   description = "Projects list"
   type = map(object({
-    create_main_step = optional(bool, true)
-    cronjobs         = optional(list(string), [])
-    deployment_name  = optional(string, "")
+    create_main_step    = optional(bool, true)
+    main_step_namespace = optional(string, "")
+    cronjobs            = optional(list(string), [])
+    deployment_name     = optional(string, "")
     pre_main_optional_steps = optional(map(object({
       name                 = string
       type                 = optional(string, "Octopus.KubernetesRunScript")
@@ -105,15 +106,15 @@ variable "projects" {
 }
 variable "pre_main_global_steps" {
   type = map(object({
-      name                 = string
-      type                 = optional(string, "Octopus.KubernetesRunScript")
-      is_required          = optional(bool, true)
-      start_trigger        = optional(string, "StartAfterPrevious")
-      properties           = map(string)
-      condition            = optional(string, "Success")
-      condition_expression = optional(string, "")
-    }))
-  
+    name                 = string
+    type                 = optional(string, "Octopus.KubernetesRunScript")
+    is_required          = optional(bool, true)
+    start_trigger        = optional(string, "StartAfterPrevious")
+    properties           = map(string)
+    condition            = optional(string, "Success")
+    condition_expression = optional(string, "")
+  }))
+
   default = {
     /*
     optional_step1 = {
@@ -130,14 +131,14 @@ variable "pre_main_global_steps" {
 
 variable "post_main_global_steps" {
   type = map(object({
-      name                 = string
-      type                 = optional(string, "Octopus.KubernetesRunScript")
-      is_required          = optional(bool, true)
-      start_trigger        = optional(string, "StartAfterPrevious")
-      properties           = map(string)
-      condition            = optional(string, "Success")
-      condition_expression = optional(string, "")
-    }))
+    name                 = string
+    type                 = optional(string, "Octopus.KubernetesRunScript")
+    is_required          = optional(bool, true)
+    start_trigger        = optional(string, "StartAfterPrevious")
+    properties           = map(string)
+    condition            = optional(string, "Success")
+    condition_expression = optional(string, "")
+  }))
 
   default = {
     /*
