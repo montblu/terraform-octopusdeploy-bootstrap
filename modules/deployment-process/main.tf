@@ -112,7 +112,7 @@ resource "octopusdeploy_process_step" "set_image_step" {
     "Octopus.Action.Script.Syntax"                  = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled"      = "True"
     "OctopusUseBundledTooling"                      = "False"
-    "Octopus.Action.KubernetesContainers.Namespace" = project.main_step_namespace
+    "Octopus.Action.KubernetesContainers.Namespace" = lookup(each.value, "main_step_namespace")
   }
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
