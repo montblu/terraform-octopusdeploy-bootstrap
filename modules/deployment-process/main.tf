@@ -105,13 +105,14 @@ resource "octopusdeploy_process_step" "set_image_step" {
   is_required    = true
   worker_pool_id = local.data_worker_pool.id
   execution_properties = {
-    "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
-    "Octopus.Action.RunOnServer"               = "true"
-    "Octopus.Action.Script.ScriptSource"       = "Inline"
-    "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
-    "Octopus.Action.Script.Syntax"             = "Bash"
-    "Octopus.Action.SubstituteInFiles.Enabled" = "True"
-    "OctopusUseBundledTooling"                 = "False"
+    "Octopus.Action.EnabledFeatures"                = "Octopus.Features.SubstituteInFiles"
+    "Octopus.Action.RunOnServer"                    = "true"
+    "Octopus.Action.Script.ScriptSource"            = "Inline"
+    "Octopus.Action.Script.ScriptBody"              = local.set_image_script_body
+    "Octopus.Action.Script.Syntax"                  = "Bash"
+    "Octopus.Action.SubstituteInFiles.Enabled"      = "True"
+    "OctopusUseBundledTooling"                      = "False"
+    "Octopus.Action.KubernetesContainers.Namespace" = lookup(each.value, "main_step_namespace")
   }
   properties = {
     "Octopus.Action.TargetRoles" = join(",", var.octopus_environments)
