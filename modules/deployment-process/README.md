@@ -45,6 +45,7 @@ https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
 | <a name="requirement_curl2"></a> [curl2](#requirement\_curl2) | 1.7.2 |
+| <a name="requirement_env"></a> [env](#requirement\_env) | 0.2.0 |
 | <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >=1.1.1, <2.0.0 |
 
 ## Providers
@@ -52,6 +53,7 @@ https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/
 | Name | Version |
 |------|---------|
 | <a name="provider_curl2"></a> [curl2](#provider\_curl2) | 1.7.2 |
+| <a name="provider_env"></a> [env](#provider\_env) | 0.2.0 |
 | <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >=1.1.1, <2.0.0 |
 
 ## Modules
@@ -91,6 +93,7 @@ No modules.
 | [octopusdeploy_variable.slack_channel](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
 | [octopusdeploy_variable.slack_webhook](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/resources/variable) | resource |
 | [curl2_curl2.slack_get_template_id](https://registry.terraform.io/providers/DanielKoehler/curl2/1.7.2/docs/data-sources/curl2) | data source |
+| [env_sensitive.octopus_api_key](https://registry.terraform.io/providers/tcarreira/env/0.2.0/docs/data-sources/sensitive) | data source |
 | [octopusdeploy_environments.all](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
 | [octopusdeploy_environments.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/environments) | data source |
 | [octopusdeploy_feeds.current](https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/data-sources/feeds) | data source |

@@ -54,3 +54,8 @@ data "octopusdeploy_worker_pools" "all" {
   space_id = var.octopus_space_id
   take     = 9999 # non-documented defaults to 10
 }
+
+data "env_sensitive" "octopus_api_key" {
+  id       = "OCTOPUS_APIKEY"
+  required = false # (optional) plan will error if not found
+}

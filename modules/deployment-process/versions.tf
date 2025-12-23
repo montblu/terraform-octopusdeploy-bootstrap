@@ -10,5 +10,9 @@ terraform {
       source  = "DanielKoehler/curl2"
       version = "1.7.2"
     }
+    env = {
+      source = "tcarreira/env"
+      version = "0.2.0"
+    }
   }
 }
