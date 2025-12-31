@@ -510,16 +510,6 @@ data "curl2" "slack_get_template_id" {
   }
 }
 
-data "curl2" "slack_get_template_id" {
-  http_method = "GET"
-  uri         = "${var.octopus_address}/api/${var.octopus_space_id}/actiontemplates?skip=0&take=1&partialName=Slack%20-%20Detailed%20Notification%20-%20Bash"
-  headers = {
-    accept : "application/json"
-    X-Octopus-ApiKey : var.octopus_api_key == "" ? data.env_sensitive.octopus_api_key.value : var.octopus_api_key
-    Content-Type : "application/json"
-  }
-}
-
 #####
 # Slack Notification Variables
 #####
