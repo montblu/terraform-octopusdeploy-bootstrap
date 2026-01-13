@@ -46,3 +46,8 @@ variable "octopus_github_feed_name" {
   type        = string
   default     = "Github Container Registry"
 }
+variable "env_sort_order" {
+  description = "Order of the environments"
+  type        = list(string)
+  default     = null
+}
