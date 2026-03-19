@@ -46,3 +46,9 @@ variable "octopus_github_feed_name" {
   type        = string
   default     = "Github Container Registry"
 }
+
+variable "octopus_developers_team_users" {
+  description = "Octopus developers team users"
+  type        = list(string)
+  default     = null
+}
