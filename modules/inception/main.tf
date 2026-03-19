@@ -38,6 +38,7 @@ resource "octopusdeploy_team" "developers" {
     space_id     = octopusdeploy_space.main[0].id
     user_role_id = octopusdeploy_user_role.developers[0].id
   }
+  users = var.octopus_developers_team_users
 }
 #One env resource only
 resource "octopusdeploy_project_group" "project_group" {
