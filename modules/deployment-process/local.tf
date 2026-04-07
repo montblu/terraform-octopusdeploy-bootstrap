@@ -37,6 +37,19 @@ kubectl set image "deployment/$DEPLOYMENT" $${CONTAINERS[@]}
 kubectl rollout status "deployment/$DEPLOYMENT"
 EOT
 
-  cronjobs_script_body = "echo Done"
+  cronjobs_script_body = <<-EOT
+  #!/bin/bash
+
+set -e
+
+DEPLOYMENT="$(get_octopusvariable "deployment_name")"
+RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
+DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
+
+# Set Image
+kubectl patch cronjob ${each.value.cronjob} --type=json \
+  -p="[{'op':'replace','path':'/spec/jobTemplate/spec/template/spec/containers/0/image','value':'${DOCKER_IMAGE}'}]"
+}
+EOT
 }
 

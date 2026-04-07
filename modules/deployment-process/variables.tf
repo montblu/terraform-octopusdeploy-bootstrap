@@ -220,3 +220,13 @@ variable "newrelic_api_url" {
   type    = string
   default = "https://api.newrelic.com/graphql"
 }
+
+variable "set_image_script_body" {
+  type    = string
+  default = ""
+}
+
+variable "set_cronjob_script_body" {
+  type    = string
+  default = ""
+}
