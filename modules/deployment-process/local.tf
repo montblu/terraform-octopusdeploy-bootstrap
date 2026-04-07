@@ -41,7 +41,7 @@ set_cronjob_script_body = <<-EOT
 #!/bin/bash
 
 set -e
-
+DEPLOYMENT="$(get_octopusvariable "deployment_name")"
 RELEASENUMBER="$(get_octopusvariable "Octopus.Release.Number")"
 DOCKER_IMAGE="$(get_octopusvariable "ecr_url")/$DEPLOYMENT:$RELEASENUMBER"
 
