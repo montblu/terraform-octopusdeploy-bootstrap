@@ -338,7 +338,7 @@ resource "octopusdeploy_process_step" "post_main_optional_step" {
 }
 
 resource "octopusdeploy_process_templated_step" "slack_notification_step" {
-  for_each         = var.create_global_resources ? (var.enable_newrelic ? var.projects : {}) : {}
+  for_each         = var.create_global_resources ? (var.enable_slack ? var.projects : {}) : {}
   condition        = "Always"
   process_id       = octopusdeploy_process.all[each.key].id
   space_id         = var.octopus_space_id
