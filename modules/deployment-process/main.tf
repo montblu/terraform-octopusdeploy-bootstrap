@@ -109,7 +109,7 @@ resource "octopusdeploy_process_step" "set_image_step" {
       "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
       "Octopus.Action.RunOnServer"               = "true"
       "Octopus.Action.Script.ScriptSource"       = "Inline"
-      "Octopus.Action.Script.ScriptBody"         = local.set_image_script_body
+      "Octopus.Action.Script.ScriptBody"         = var.set_image_script_body == "" ? local.set_image_script_body : var.set_image_script_body
       "Octopus.Action.Script.Syntax"             = "Bash"
       "Octopus.Action.SubstituteInFiles.Enabled" = "True"
       "OctopusUseBundledTooling"                 = "False"
@@ -159,7 +159,7 @@ resource "octopusdeploy_process_step" "cronjobs_step" {
     "Octopus.Action.EnabledFeatures"           = "Octopus.Features.SubstituteInFiles"
     "Octopus.Action.RunOnServer"               = "true"
     "Octopus.Action.Script.ScriptSource"       = "Inline"
-    "Octopus.Action.Script.ScriptBody"         = local.cronjobs_script_body
+    "Octopus.Action.Script.ScriptBody"         = coalesce(var.set_cronjob_script_body, replace(local.set_cronjob_script_body, "__CRONJOB__", each.value.cronjob)) 
     "Octopus.Action.Script.Syntax"             = "Bash"
     "Octopus.Action.SubstituteInFiles.Enabled" = "True"
     "OctopusUseBundledTooling"                 = "False"
