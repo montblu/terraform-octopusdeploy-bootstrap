@@ -71,10 +71,11 @@ resource "octopusdeploy_lifecycle" "main" {
   description = each.value.description
   space_id    = var.create_global_resources ? octopusdeploy_space.main[0].id : data.octopusdeploy_space.space[0].id
 
-  release_retention_policy {
-    quantity_to_keep    = each.value.release_retention_policy.quantity_to_keep
-    should_keep_forever = each.value.release_retention_policy.should_keep_forever
-    unit                = each.value.release_retention_policy.unit
+
+  release_retention_with_strategy {
+    strategy         = each.value.release_retention_policy.should_keep_forever ? "Forever" : "Count"
+    quantity_to_keep = each.value.release_retention_policy.should_keep_forever ? null : each.value.release_retention_policy.quantity_to_keep
+    unit             = each.value.release_retention_policy.should_keep_forever ? null : each.value.release_retention_policy.unit
   }
 
   dynamic "phase" {
