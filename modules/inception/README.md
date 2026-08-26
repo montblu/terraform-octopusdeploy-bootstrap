@@ -12,13 +12,13 @@ https://registry.terraform.io/providers/OctopusDeploy/octopusdeploy/latest/docs/
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | >= 1.1.0 |
-| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >=1.1.1, <2.0.0 |
+| <a name="requirement_octopusdeploy"></a> [octopusdeploy](#requirement\_octopusdeploy) | >= 1.15.0, < 2.0.0 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >=1.1.1, <2.0.0 |
+| <a name="provider_octopusdeploy"></a> [octopusdeploy](#provider\_octopusdeploy) | >= 1.15.0, < 2.0.0 |
 
 ## Modules
 
