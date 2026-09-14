@@ -3,7 +3,7 @@ resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
   count       = var.create_global_resources ? 1 : 0
   name        = "${var.octopus_project_group_name}-workers-Ubuntu"
   space_id    = var.octopus_space_id
-  worker_type = "Ubuntu2204"
+  worker_type = "UbuntuDefault" # Ubuntu version doesn't matter: steps run inside our workertools container, not on the host directly
   is_default  = true
 }
 
