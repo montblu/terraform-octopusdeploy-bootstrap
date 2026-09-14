@@ -3,7 +3,7 @@ resource "octopusdeploy_dynamic_worker_pool" "ubuntu" {
   count       = var.create_global_resources ? 1 : 0
   name        = "${var.octopus_project_group_name}-workers-Ubuntu"
   space_id    = var.octopus_space_id
-  worker_type = "Ubuntu2204"
+  worker_type = "UbuntuDefault"
   is_default  = true
 }
 
