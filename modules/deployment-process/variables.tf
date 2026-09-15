@@ -42,7 +42,7 @@ variable "octopus_space_id" {
 variable "octopus_worker_tools_version" {
   description = "Octopus worker tools version"
   type        = string
-  default     = "0.1.0"
+  default     = "0.1.1"
 }
 
 variable "ecr_url" {
