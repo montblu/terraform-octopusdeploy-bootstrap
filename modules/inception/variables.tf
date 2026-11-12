@@ -20,13 +20,13 @@ variable "lifecycles" {
     name        = string
     description = optional(string, "Default description")
     release_retention_policy = optional(object({
-      quantity_to_keep    = optional(number, 30)
+      quantity_to_keep    = optional(number, 100)
       should_keep_forever = optional(bool, false)
-      unit                = optional(string, "Days")
+      unit                = optional(string, "Items")
       }), {
-      quantity_to_keep    = 30
+      quantity_to_keep    = 100
       should_keep_forever = false
-      unit                = "Days"
+      unit                = "Items"
       }
     )
     phases = optional(list(object({
